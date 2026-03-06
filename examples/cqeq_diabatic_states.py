@@ -73,7 +73,8 @@ atoms_sp2.calc = calc_d2
 e_d2_sp = atoms_sp2.get_potential_energy()
 
 # Diabatic coupling at reference geometry (Eq. 8 of CQEq paper)
-
+charges_d1 = atoms_sp1.get_charges()
+charges_d2 = atoms_sp2.get_charges()
 h12_sp = np.sqrt((e_d1_sp - e_gs_sp) * (e_d2_sp - e_gs_sp))
 
 print(f"  E_gs  (adiabatic)         = {e_gs_sp:12.6f} eV")
@@ -81,3 +82,8 @@ print(f"  E_1   (Q^- left)          = {e_d1_sp:12.6f} eV")
 print(f"  E_2   (Q^- right)         = {e_d2_sp:12.6f} eV")
 print(f"  |H_12| (ref geom)         = {h12_sp:12.6f} eV")
 print()
+
+# Fix: convert to numpy array first
+rm_arr = np.array(REGION_MASK)
+print("C1: ", np.sum(charges_d1[rm_arr == 1]))
+print("C2: ", np.sum(charges_d2[rm_arr == 1]))
