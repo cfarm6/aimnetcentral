@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import numpy as np
 import torch
 
@@ -7,6 +9,12 @@ except ImportError:
     raise ImportError("ASE is not installed. Please install ASE to use this module.") from None
 
 from .calculator import AIMNet2Calculator
+
+
+@dataclass
+class ChargeSpinConstraint:
+    region_indices: list[int]
+    region_value: float
 
 
 class AIMNet2ASE(Calculator):
@@ -21,7 +29,14 @@ class AIMNet2ASE(Calculator):
         "dipole_moment",
     ]
 
-    def __init__(self, base_calc: AIMNet2Calculator | str = "aimnet2", charge=0, mult=1):
+    def __init__(
+        self,
+        base_calc: AIMNet2Calculator | str = "aimnet2",
+        charge=0,
+        mult=1,
+        charge_constraints: list[ChargeSpinConstraint] | None = None,
+        spin_constraints: list[ChargeSpinConstraint] | None = None,
+    ):
         super().__init__()
         if isinstance(base_calc, str):
             base_calc = AIMNet2Calculator(base_calc)
@@ -31,6 +46,8 @@ class AIMNet2ASE(Calculator):
         self.reset()
         self.charge = charge
         self.mult = mult
+        self.charge_constraints = charge_constraints
+        self.spin_constraints = spin_constraints
         self.update_tensors()
         # list of implemented species
         if hasattr(base_calc, "implemented_species"):
@@ -79,6 +96,16 @@ class AIMNet2ASE(Calculator):
         self._t_mult = None
         self.update_tensors()
 
+    def set_charge_constraints(self, charge_constraints):
+        self.charge_constraints = charge_constraints
+        self._t_charge_constraints = None
+        self.update_tensors()
+
+    def set_spin_constraints(self, spin_constraints):
+        self.spin_constraints = spin_constraints
+        self._t_spin_constraints = None
+        self.update_tensors()
+
     def _update_charge_spin_from_info(self):
         atoms = getattr(self, "atoms", None)
         if atoms is None:
@@ -91,6 +118,28 @@ class AIMNet2ASE(Calculator):
         charge = info.get("charge")
         if charge is not None and charge != self.charge:
             self.charge = charge
+            self._t_charge = None
+
+        if self.base_calc.is_nse:
+            # Support both "mult" (AIMNet2 style) and "spin" (MACE style)
+            # Both represent multiplicity (2S+1)
+            mult = info.get("mult", info.get("spin"))
+            if mult is not None and mult != self.mult:
+                self.mult = mult
+                self._t_mult = None
+
+    def _update_charge_spin_constraints_from_info(self):
+        atoms = getattr(self, "atoms", None)
+        if atoms is None:
+            return
+        info = getattr(atoms, "info", {})
+
+        # Order of precedence for charge:
+        # 1. atoms.info['charge']
+        # 2. calculator.charge (passed to constructor or set_charge)
+        charge_constraints = info.get("charge_constraints")
+        if charge_constraints is not None and charge_constraints != self.charge_constraints:
+            self.charge_constraints = charge_constraints
             self._t_charge = None
 
         if self.base_calc.is_nse:
@@ -124,12 +173,17 @@ class AIMNet2ASE(Calculator):
             properties = ["energy"]
         super().calculate(atoms, properties, system_changes)
         self._update_charge_spin_from_info()
+        self._update_charge_spin_constraints_from_info()
         self.update_tensors()
 
         cell = self.atoms.cell.array if self.atoms.cell is not None and self.atoms.pbc.any() else None
 
         _in = {
-            "coord": torch.tensor(self.atoms.positions, dtype=torch.float32, device=self.base_calc.device),
+            "coord": torch.as_tensor(
+                self.atoms.positions,
+                dtype=torch.float32,
+                device=self.base_calc.device,
+            ),
             "numbers": self._t_numbers,
             "charge": self._t_charge,
             "mult": self._t_mult,
@@ -142,8 +196,76 @@ class AIMNet2ASE(Calculator):
             for k, v in _in.items():
                 _in[k] = v.unsqueeze(0)
             _unsqueezed = True
+        if self.charge_constraints is not None:
+            # Prefer per-atom region IDs (region batching) when constraints
+            # cleanly partition the atoms into non-overlapping regions. This
+            # matches the batched ID-based encoding used in examples and
+            # is handled efficiently by ops._constrained_nse_impl.
+            num_atoms = len(self.atoms)
+            region_ids = torch.full(
+                (num_atoms,),
+                -1,
+                dtype=torch.int64,
+                device=self.base_calc.device,
+            )
+            coverage_counts = torch.zeros(
+                (num_atoms,),
+                dtype=torch.int64,
+                device=self.base_calc.device,
+            )
+            region_values: list[float] = []
 
-        results = self.base_calc(_in, forces="forces" in properties, stress="stress" in properties)
+            for ridx, constraint in enumerate(self.charge_constraints):
+                idx = torch.tensor(
+                    constraint.region_indices,
+                    dtype=torch.int64,
+                    device=self.base_calc.device,
+                )
+                region_ids[idx] = ridx
+                coverage_counts[idx] += 1
+                region_values.append(float(constraint.region_value))
+
+            covers_all = bool((region_ids != -1).all().item())
+            no_overlap = bool((coverage_counts <= 1).all().item())
+
+            if covers_all and no_overlap:
+                # ID encoding: per-atom region IDs + per-region target charges
+                _in["region_mask"] = region_ids
+                _in["region_charges"] = torch.tensor(
+                    region_values,
+                    dtype=torch.float32,
+                    device=self.base_calc.device,
+                )
+            else:
+                # Fall back to index-list encoding for partial/overlapping regions,
+                # which is also supported by ops._constrained_nse_impl.
+                _in["region_mask"] = torch.tensor(
+                    [constraint.region_indices for constraint in self.charge_constraints],
+                    dtype=torch.int64,
+                    device=self.base_calc.device,
+                )
+                _in["region_charges"] = torch.tensor(
+                    [constraint.region_value for constraint in self.charge_constraints],
+                    dtype=torch.float32,
+                    device=self.base_calc.device,
+                )
+        if self.spin_constraints is not None:
+            _in["region_mask"] = torch.tensor(
+                [constraint.region_indices for constraint in self.spin_constraints],
+                dtype=torch.int64,
+                device=self.base_calc.device,
+            )
+            _in["region_values"] = torch.tensor(
+                [constraint.region_value for constraint in self.spin_constraints],
+                dtype=torch.float32,
+                device=self.base_calc.device,
+            )
+
+        results = self.base_calc(
+            _in,
+            forces="forces" in properties,
+            stress="stress" in properties,
+        )
 
         for k, v in results.items():
             if _unsqueezed:

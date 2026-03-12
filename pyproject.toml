@@ -9,7 +9,7 @@ authors = [
 ]
 description = "AIMNet Machine Learned Interatomic Potential"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11, <3.14"
 license = { file = "LICENSE" }
 keywords = [
     "machine learning",

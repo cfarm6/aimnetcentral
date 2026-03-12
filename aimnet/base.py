@@ -21,6 +21,8 @@ class AIMNet2Base(nn.Module):
         "shifts",
         "shifts_lr",
         "cell",
+        "region_mask",
+        "region_charges",
     ]
     _optional_keys_dtype: Final = [
         torch.float32,  # mult
@@ -30,6 +32,8 @@ class AIMNet2Base(nn.Module):
         torch.float32,  # shifts
         torch.float32,  # shifts_lr
         torch.float32,  # cell
+        torch.int64,  # region_mask
+        torch.float32,  # region_charges
     ]
     __constants__: ClassVar = ["_required_keys", "_required_keys_dtype", "_optional_keys", "_optional_keys_dtype"]
 

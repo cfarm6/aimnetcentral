@@ -111,7 +111,9 @@ def nse(
     data: dict[str, Tensor],
     epsilon: float = 1.0e-6,
 ) -> Tensor:
+    """Neural charge equilibration with optional per-region constraints."""
     # Q and q_u and f_u must have last dimension size 1 or 2
+    # Global sum(f_u) and sum(q_u)
     F_u = nbops.mol_sum(f_u, data)
     if epsilon > 0:
         F_u = F_u + epsilon
@@ -119,16 +121,29 @@ def nse(
     dQ = Q - Q_u
     # for loss
     data["_dQ"] = dQ
-
     nb_mode = nbops.get_nb_mode(data)
+    # Region-wise sum(f_u) and sum(q_u)
     if nb_mode in (0, 2):
-        F_u = F_u.unsqueeze(-2)
-        dQ = dQ.unsqueeze(-2)
+        if "region_mask" in data and "region_charges" in data:
+            raise NotImplementedError(
+                "Region-wise NSE is not implemented for nb_mode 0 or 2 with region_mask and region_charges."
+            )
+        else:
+            F_u = F_u.unsqueeze(-2)
+            dQ = dQ.unsqueeze(-2)
     elif nb_mode == 1:
-        data["mol_sizes"][-1] += 1
-        F_u = torch.repeat_interleave(F_u, data["mol_sizes"], dim=0)
-        dQ = torch.repeat_interleave(dQ, data["mol_sizes"], dim=0)
-        data["mol_sizes"][-1] -= 1
+        if "region_mask" in data and "region_charges" in data:
+            F_u_R = nbops.region_sum(f_u, data)
+            Q_u_R = nbops.region_sum(q_u, data)
+            dQ_R = data["region_charges"] - Q_u_R
+            data["_dQ_R"] = dQ_R
+            dQ = dQ_R[data["region_mask"]]
+            F_u = F_u_R[data["region_mask"]]
+        else:
+            data["mol_sizes"][-1] += 1
+            F_u = torch.repeat_interleave(F_u, data["mol_sizes"], dim=0)
+            dQ = torch.repeat_interleave(dQ, data["mol_sizes"], dim=0)
+            data["mol_sizes"][-1] -= 1
     else:
         raise ValueError(f"Invalid neighbor mode: {nb_mode}")
     f = f_u / F_u

@@ -239,3 +239,34 @@ def mol_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
     else:
         raise ValueError(f"Invalid neighbor mode: {nb_mode}")
     return res
+
+
+def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
+    nb_mode = get_nb_mode(data)
+    if nb_mode in (0, 2):
+        region_idx = data["region_mask"]
+        # [[0,0,0,1,1,1,1,2,2,2],[0,0,0,1,1,1,2,2,2]] => (2,3)
+        out_size = (x.shape[0], int(region_idx.max() + 1))
+        if x.ndim == 1:
+            res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
+        else:
+            region_idx = region_idx.expand(-1, x.shape[1])
+            res = torch.zeros(out_size, x.shape[1], device=x.device, dtype=x.dtype)
+        res.scatter_add_(0, region_idx, x)
+    elif nb_mode == 1:
+        assert x.ndim in (
+            1,
+            2,
+        ), "Invalid tensor shape for region_sum, ndim should be 1 or 2"
+        idx = data["region_mask"]
+
+        out_size = int(idx.max() + 1)
+        if x.ndim == 1:
+            res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
+        else:
+            idx = idx.unsqueeze(-1).expand(-1, x.shape[1])
+            res = torch.zeros(out_size, x.shape[1], device=x.device, dtype=x.dtype)
+        res.scatter_add_(0, idx, x)
+    else:
+        raise ValueError(f"Invalid neighbor mode: {nb_mode}")
+    return res

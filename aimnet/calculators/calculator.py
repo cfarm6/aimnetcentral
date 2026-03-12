@@ -209,6 +209,8 @@ class AIMNet2Calculator:
         "shifts": torch.float,
         "shifts_lr": torch.float,
         "cell": torch.float,
+        "region_mask": torch.int,
+        "region_charges": torch.float,
     }
     keys_out: ClassVar[list[str]] = ["energy", "charges", "spin_charges", "forces", "hessian", "stress"]
     atom_feature_keys: ClassVar[list[str]] = ["coord", "numbers", "charges", "spin_charges", "forces"]
@@ -685,9 +687,14 @@ class AIMNet2Calculator:
             self.external_dftd3.set_smoothing(cutoff, smoothing_fraction)
         self._update_lr_nblists()
 
-    def eval(self, data: dict[str, Any], forces=False, stress=False, hessian=False) -> dict[str, Tensor]:
+    def eval(
+        self,
+        data: dict[str, Any],
+        forces=False,
+        stress=False,
+        hessian=False,
+    ) -> dict[str, Tensor]:
         data = self.prepare_input(data)
-
         if hessian and "mol_idx" in data and data["mol_idx"][-1] > 0:
             raise NotImplementedError("Hessian calculation is not supported for multiple molecules")
         data = self.set_grad_tensors(data, forces=forces, stress=stress, hessian=hessian)
@@ -718,6 +725,8 @@ class AIMNet2Calculator:
             # Skip neighbor list calculation if already provided
             if "nbmat" not in data:
                 data = self.make_nbmat(data)
+            if "region_charges" in data:
+                data["region_charges"] = data["region_charges"].unsqueeze(-1)
             data = self.pad_input(data)
         return data
 
