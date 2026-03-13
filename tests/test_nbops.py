@@ -504,3 +504,29 @@ class TestGradientFlow:
         loss.backward()
 
         assert x.grad is not None
+
+
+class TestRegionSum:
+    """Tests for region_sum function."""
+
+    def test_region_sum_mode_0_basic(self, simple_molecule):
+        """Test region-wise summation for mode 0."""
+        device = simple_molecule["coord"].device
+        data = simple_molecule.copy()
+        data = nbops.set_nb_mode(data)
+        assert nbops.get_nb_mode(data) == 0
+
+        # Three atoms, assign them to two regions: [0, 1, 0]
+        data["region_mask"] = torch.tensor([[0, 1, 0]], device=device)
+
+        # Per-atom values with explicit feature dimension
+        x = torch.tensor([[[1.0], [2.0], [3.0]]], device=device)
+
+        res = nbops.region_sum(x, data)
+
+        # Two regions, single feature
+        assert res.shape == (2, 1)
+        # Region 0: atoms 0 and 2 -> 1.0 + 3.0
+        assert res[0, 0].item() == pytest.approx(4.0, abs=1e-6)
+        # Region 1: atom 1 -> 2.0
+        assert res[1, 0].item() == pytest.approx(2.0, abs=1e-6)

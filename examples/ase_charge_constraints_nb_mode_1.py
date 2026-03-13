@@ -3,7 +3,7 @@ import os
 import ase.io
 import torch
 
-from aimnet.calculators import AIMNet2Calculator
+from aimnet.calculators import AIMNet2ASE, AIMNet2Calculator, ChargeSpinConstraint
 
 
 def torch_show_device_into():
@@ -54,13 +54,14 @@ region_charges_1 = -1.0
 region_charges_2 = 1.0
 region_charges_3 = 0.0
 # Prepare a simple batched input (two identical molecules)
-coords = torch.tensor(atoms.get_positions(), dtype=torch.float32)
-numbers = torch.tensor(atoms.get_atomic_numbers(), dtype=torch.long)
+coords = torch.tensor(atoms.positions, dtype=torch.float32)
+numbers = torch.tensor(atoms.numbers, dtype=torch.long)
 charges = 0.0
 region_charges = torch.tensor([region_charges_1, region_charges_2, region_charges_3], dtype=torch.float32)
 region_mask = torch.tensor(region_mask, dtype=torch.long)
 
 calc = AIMNet2Calculator("aimnet2_2025")
+
 result = calc(
     {
         "coord": coords,
@@ -77,3 +78,22 @@ print("Region 1: ", result["charges"][region_1_indices].sum())
 print("Region 2: ", result["charges"][region_2_indices].sum())
 print("Region 3: ", result["charges"][region_3_indices].sum())
 print("Total: ", result["charges"].sum())
+region_1 = ChargeSpinConstraint(
+    region_indices=region_1_indices,
+    region_value=region_charges_1,
+)
+region_2 = ChargeSpinConstraint(
+    region_indices=region_2_indices,
+    region_value=region_charges_2,
+)
+region_3 = ChargeSpinConstraint(
+    region_indices=region_3_indices,
+    region_value=region_charges_3,
+)
+atoms.calc = AIMNet2ASE(calc, charge=0, charge_constraints=[region_1, region_2, region_3])
+energy = atoms.get_potential_energy()
+print("Energy: ", energy)
+print("Charges: ", atoms.calc.get_charges()[region_1_indices].sum())
+print("Charges: ", atoms.calc.get_charges()[region_2_indices].sum())
+print("Charges: ", atoms.calc.get_charges()[region_3_indices].sum())
+print("Total: ", atoms.calc.get_charges().sum())

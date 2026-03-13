@@ -125,9 +125,11 @@ def nse(
     # Region-wise sum(f_u) and sum(q_u)
     if nb_mode in (0, 2):
         if "region_mask" in data and "region_charges" in data:
-            raise NotImplementedError(
-                "Region-wise NSE is not implemented for nb_mode 0 or 2 with region_mask and region_charges."
-            )
+            F_u_R = nbops.region_sum(f_u, data)
+            Q_u_R = nbops.region_sum(q_u, data)
+            dQ_u_R = data["region_charges"].unsqueeze(-1) - Q_u_R
+            dQ = torch.gather(dQ_u_R, 1, data["region_mask"])
+            F_u = torch.gather(F_u_R, 1, data["region_mask"])
         else:
             F_u = F_u.unsqueeze(-2)
             dQ = dQ.unsqueeze(-2)

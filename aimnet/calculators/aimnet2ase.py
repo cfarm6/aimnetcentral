@@ -180,93 +180,34 @@ class AIMNet2ASE(Calculator):
 
         _in = {
             "coord": torch.as_tensor(
-                self.atoms.positions,
+                self.atoms.positions,  # [N_Atoms, 3]
                 dtype=torch.float32,
                 device=self.base_calc.device,
             ),
-            "numbers": self._t_numbers,
-            "charge": self._t_charge,
-            "mult": self._t_mult,
+            "numbers": self._t_numbers,  # [N_atoms]
+            "charge": self._t_charge,  # []
+            "mult": self._t_mult,  # []
         }
-
         _unsqueezed = False
+        if self.charge_constraints is not None:
+            mask = torch.zeros(len(self.atoms) + 1, dtype=torch.int64, device=self.base_calc.device)
+            for constraint_idx, constraint in enumerate(self.charge_constraints):
+                mask[constraint.region_indices] = constraint_idx
+            charges = [constraint.region_value for constraint in self.charge_constraints]
+            _in["region_mask"] = mask.unsqueeze(-1)
+            _in["region_charges"] = torch.tensor(charges, dtype=torch.float32, device=self.base_calc.device)
+
         if cell is not None:
             _in["cell"] = cell
         else:
             for k, v in _in.items():
                 _in[k] = v.unsqueeze(0)
             _unsqueezed = True
-        if self.charge_constraints is not None:
-            # Prefer per-atom region IDs (region batching) when constraints
-            # cleanly partition the atoms into non-overlapping regions. This
-            # matches the batched ID-based encoding used in examples and
-            # is handled efficiently by ops._constrained_nse_impl.
-            num_atoms = len(self.atoms)
-            region_ids = torch.full(
-                (num_atoms,),
-                -1,
-                dtype=torch.int64,
-                device=self.base_calc.device,
-            )
-            coverage_counts = torch.zeros(
-                (num_atoms,),
-                dtype=torch.int64,
-                device=self.base_calc.device,
-            )
-            region_values: list[float] = []
-
-            for ridx, constraint in enumerate(self.charge_constraints):
-                idx = torch.tensor(
-                    constraint.region_indices,
-                    dtype=torch.int64,
-                    device=self.base_calc.device,
-                )
-                region_ids[idx] = ridx
-                coverage_counts[idx] += 1
-                region_values.append(float(constraint.region_value))
-
-            covers_all = bool((region_ids != -1).all().item())
-            no_overlap = bool((coverage_counts <= 1).all().item())
-
-            if covers_all and no_overlap:
-                # ID encoding: per-atom region IDs + per-region target charges
-                _in["region_mask"] = region_ids
-                _in["region_charges"] = torch.tensor(
-                    region_values,
-                    dtype=torch.float32,
-                    device=self.base_calc.device,
-                )
-            else:
-                # Fall back to index-list encoding for partial/overlapping regions,
-                # which is also supported by ops._constrained_nse_impl.
-                _in["region_mask"] = torch.tensor(
-                    [constraint.region_indices for constraint in self.charge_constraints],
-                    dtype=torch.int64,
-                    device=self.base_calc.device,
-                )
-                _in["region_charges"] = torch.tensor(
-                    [constraint.region_value for constraint in self.charge_constraints],
-                    dtype=torch.float32,
-                    device=self.base_calc.device,
-                )
-        if self.spin_constraints is not None:
-            _in["region_mask"] = torch.tensor(
-                [constraint.region_indices for constraint in self.spin_constraints],
-                dtype=torch.int64,
-                device=self.base_calc.device,
-            )
-            _in["region_values"] = torch.tensor(
-                [constraint.region_value for constraint in self.spin_constraints],
-                dtype=torch.float32,
-                device=self.base_calc.device,
-            )
-
         results = self.base_calc(
             _in,
             forces="forces" in properties,
             stress="stress" in properties,
         )
-
         for k, v in results.items():
             if _unsqueezed:
                 v = v.squeeze(0)

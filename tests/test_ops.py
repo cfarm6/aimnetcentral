@@ -364,6 +364,33 @@ class TestNSE:
 
         assert q_u.grad is not None
 
+    def test_nse_region_constraints_mode_0(self, simple_molecule):
+        """Test NSE with per-region charge constraints in mode 0."""
+        device = simple_molecule["coord"].device
+        data = simple_molecule.copy()
+        data = nbops.set_nb_mode(data)
+        data = nbops.calc_masks(data)
+        assert nbops.get_nb_mode(data) == 0
+
+        # Three atoms split into two regions: [0, 1, 0]
+        data["region_mask"] = torch.tensor([[0, 1, 0]], device=device)
+        # Target charges per region: region 0 -> +0.5, region 1 -> -0.5
+        region_charges = torch.tensor([0.5, -0.5], device=device).unsqueeze(-1)
+        data["region_charges"] = region_charges
+
+        # Unconstrained charges and flexibilities
+        q_u = torch.zeros((1, 3, 1), device=device)
+        f_u = torch.ones_like(q_u)
+        # Global target charge equals sum of region charges
+        Q = torch.tensor([[region_charges.sum().item()]], device=device)
+
+        q = ops.nse(Q, q_u, f_u, data)
+
+        # Check that per-region sums match targets
+        q_region = nbops.region_sum(q, data)
+        assert q_region.shape == region_charges.shape
+        assert torch.allclose(q_region, region_charges, atol=1e-5)
+
 
 class TestTransitionFunctions:
     """Tests for smooth transition functions (huber, bumpfn, smoothstep, expstep)."""

@@ -243,16 +243,28 @@ def mol_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
 
 def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
     nb_mode = get_nb_mode(data)
-    if nb_mode in (0, 2):
-        region_idx = data["region_mask"]
-        # [[0,0,0,1,1,1,1,2,2,2],[0,0,0,1,1,1,2,2,2]] => (2,3)
-        out_size = (x.shape[0], int(region_idx.max() + 1))
-        if x.ndim == 1:
-            res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
-        else:
-            region_idx = region_idx.expand(-1, x.shape[1])
-            res = torch.zeros(out_size, x.shape[1], device=x.device, dtype=x.dtype)
-        res.scatter_add_(0, region_idx, x)
+    if nb_mode == 0:  # [Batch, N_atoms, FeatureSize]
+        # Dense batched format: x is typically (B, N, C) or (B, N).
+        assert x.ndim in (2, 3), "Invalid tensor shape for region_sum in nb_mode=0, ndim should be 2 or 3"
+        idx = data["region_mask"]  # [Batch, N_atoms, 1]
+        out_size = (int(x.shape[0]), int(idx.max().item() + 1), 1)
+        # [Batch, N_Regions, 1]
+        res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
+        res.scatter_add_(1, idx, x)
+        return res
+        # # Ensure region_mask aligns with first two dimensions (batch, atom)
+        # # and collapse batch/atom into a single index dimension.
+        # while idx.ndim < 2:
+        #     idx = idx.unsqueeze(0)
+        # if idx.shape[0] != x.shape[0] or idx.shape[1] != x.shape[1]:
+        #     raise ValueError(f"region_mask must have shape (B, N) or be broadcastable to it in nb_mode=0., idx.shape: {idx.shape}, x.shape: {x.shape}")
+        # idx = idx.reshape(-1)
+
+        # x_flat = x.reshape(x.shape[0] * x.shape[1], -1)
+        # out_size = int(idx.max().item() + 1)
+        # res = torch.zeros(out_size, x_flat.shape[1], device=x.device, dtype=x.dtype)
+        # res.index_add_(0, idx, x_flat)
+
     elif nb_mode == 1:
         assert x.ndim in (
             1,
@@ -267,6 +279,11 @@ def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
             idx = idx.unsqueeze(-1).expand(-1, x.shape[1])
             res = torch.zeros(out_size, x.shape[1], device=x.device, dtype=x.dtype)
         res.scatter_add_(0, idx, x)
+        return res
+    elif nb_mode == 2:
+        raise NotImplementedError(
+            f"Region-wise sum is not implemented for nb_mode {nb_mode} with region_mask and region_charges."
+        )
     else:
         raise ValueError(f"Invalid neighbor mode: {nb_mode}")
     return res
