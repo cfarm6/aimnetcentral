@@ -190,7 +190,7 @@ class AIMNet2ASE(Calculator):
         }
         _unsqueezed = False
         if self.charge_constraints is not None:
-            mask = torch.zeros(len(self.atoms) + 1, dtype=torch.int64, device=self.base_calc.device)
+            mask = torch.zeros(len(self.atoms), dtype=torch.int64, device=self.base_calc.device)
             for constraint_idx, constraint in enumerate(self.charge_constraints):
                 mask[constraint.region_indices] = constraint_idx
             charges = [constraint.region_value for constraint in self.charge_constraints]
