@@ -129,18 +129,32 @@ def nse(
             Q_u_R = nbops.region_sum(q_u, data)
             dQ_u_R = data["region_charges"].unsqueeze(-1) - Q_u_R
             dQ = torch.gather(dQ_u_R, 1, data["region_mask"])
+            # F_u = F_u.unsqueeze(-2)
             F_u = torch.gather(F_u_R, 1, data["region_mask"])
         else:
             F_u = F_u.unsqueeze(-2)
             dQ = dQ.unsqueeze(-2)
     elif nb_mode == 1:
         if "region_mask" in data and "region_charges" in data:
+            region_mask = data["region_mask"]
+            if region_mask.ndim > 1:
+                region_mask = region_mask.reshape(-1)
+            # nb_mode=1 commonly includes one padding atom at the end; allow mask to omit it
+            if region_mask.numel() == q_u.shape[0] - 1:
+                pad_val = region_mask[-1] if region_mask.numel() > 0 else region_mask.new_zeros(())
+                region_mask = torch.cat([region_mask, pad_val.reshape(1)], dim=0)
+            if region_mask.numel() != q_u.shape[0]:
+                raise ValueError(
+                    "region_mask shape mismatch for nb_mode=1 in ops.nse: "
+                    f"expected {q_u.shape[0]} entries, got {region_mask.numel()} (region_mask.shape={tuple(data['region_mask'].shape)}, q_u.shape={tuple(q_u.shape)})"
+                )
+
             F_u_R = nbops.region_sum(f_u, data)
             Q_u_R = nbops.region_sum(q_u, data)
             dQ_R = data["region_charges"] - Q_u_R
             data["_dQ_R"] = dQ_R
-            dQ = dQ_R[data["region_mask"]]
-            F_u = F_u_R[data["region_mask"]]
+            dQ = dQ_R[region_mask]
+            F_u = F_u_R[region_mask]
         else:
             data["mol_sizes"][-1] += 1
             F_u = torch.repeat_interleave(F_u, data["mol_sizes"], dim=0)

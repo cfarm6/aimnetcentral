@@ -271,8 +271,22 @@ def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
             2,
         ), "Invalid tensor shape for region_sum, ndim should be 1 or 2"
         idx = data["region_mask"]
+        if idx.ndim > 1:
+            idx = idx.reshape(-1)
+        # nb_mode=1 inputs are commonly padded by one extra "dummy" atom at the end.
+        # `region_mask` often comes from external constraints and may omit that final
+        # padding entry. If so, pad it with any valid region index; the padded atom's
+        # contributions should be zeroed elsewhere.
+        if idx.numel() == x.shape[0] - 1:
+            pad_val = idx[-1] if idx.numel() > 0 else idx.new_zeros(())
+            idx = torch.cat([idx, pad_val.reshape(1)], dim=0)
+        if idx.numel() != x.shape[0]:
+            raise ValueError(
+                "region_mask shape mismatch for nb_mode=1: "
+                f"expected {x.shape[0]} entries, got {idx.numel()} (idx.shape={tuple(data['region_mask'].shape)}, x.shape={tuple(x.shape)})"
+            )
 
-        out_size = int(idx.max() + 1)
+        out_size = int(idx.max().item()) + 1
         if x.ndim == 1:
             res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
         else:
