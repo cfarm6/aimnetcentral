@@ -9,7 +9,7 @@ from conftest import CAFFEINE_FILE, CIF_SPIRO
 # All tests in this module require ASE
 pytestmark = pytest.mark.ase
 
-MODELS = ("aimnet2", "aimnet2_b973c")
+MODELS = ("aimnet2", "aimnet2_2025")
 NSE_MODEL = "aimnet2nse"
 
 

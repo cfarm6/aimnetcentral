@@ -8,7 +8,7 @@ You can contribute in many ways:
 
 ## Report Bugs
 
-Report bugs at https://github.com/isayevlab/aimnetcentral/issues
+Report bugs at [https://github.com/isayevlab/aimnetcentral/issues](https://github.com/isayevlab/aimnetcentral/issues)
 
 If you are reporting a bug, please include:
 
@@ -30,7 +30,7 @@ AIMNet2 could always use more documentation, whether as part of the official doc
 
 ## Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/isayevlab/aimnetcentral/issues.
+The best way to send feedback is to file an issue at [https://github.com/isayevlab/aimnetcentral/issues](https://github.com/isayevlab/aimnetcentral/issues).
 
 If you are proposing a new feature:
 
@@ -43,7 +43,6 @@ If you are proposing a new feature:
 Ready to contribute? Here's how to set up `aimnetcentral` for local development. Please note this documentation assumes you already have `uv` and `Git` installed and ready to go.
 
 1. Fork the `aimnetcentral` repo on GitHub.
-
 2. Clone your fork locally:
 
 ```bash
@@ -51,10 +50,10 @@ cd <directory_in_which_repo_should_be_created>
 git clone git@github.com:YOUR_NAME/aimnetcentral.git
 ```
 
-3. Now we need to install the environment. Navigate into the directory
+1. Now we need to install the environment. Navigate into the directory
 
 ```bash
-cd aimnetcentral
+cd aimnetcentral2
 ```
 
 Then, install the development environment with:
@@ -64,7 +63,7 @@ make install
 source .venv/bin/activate
 ```
 
-4. Pre-commit (required)
+1. Pre-commit (required)
 
 We require `pre-commit` for all contributions. Install hooks once:
 
@@ -72,7 +71,7 @@ We require `pre-commit` for all contributions. Install hooks once:
 uv run pre-commit install
 ```
 
-5. Create a branch for local development:
+1. Create a branch for local development:
 
 ```bash
 git checkout -b name-of-your-bugfix-or-feature
@@ -80,9 +79,8 @@ git checkout -b name-of-your-bugfix-or-feature
 
 Now you can make your changes locally.
 
-6. Don't forget to add test cases for your added functionality to the `tests` directory.
-
-7. When you're done making changes, check that your changes pass the formatting tests.
+1. Don't forget to add test cases for your added functionality to the `tests` directory.
+2. When you're done making changes, check that your changes pass the formatting tests.
 
 ```bash
 make check
@@ -94,14 +92,14 @@ Now, validate that all unit tests are passing:
 make test
 ```
 
-9. CI notes
+1. CI notes
 
 CI runs tests in separate jobs:
 
 - Core tests on a minimal install
 - Optional extras tests (`ase`, `pysis`, `train`) in dedicated jobs
 
-10. Commit your changes and push your branch to GitHub:
+1. Commit your changes and push your branch to GitHub:
 
 ```bash
 git add .
@@ -109,12 +107,11 @@ git commit -m "Your detailed description of your changes."
 git push origin name-of-your-bugfix-or-feature
 ```
 
-11. Submit a pull request through the GitHub website.
+1. Submit a pull request through the GitHub website.
 
 # Pull Request Guidelines
 
 Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
-
 2. If the pull request adds functionality, the docs should be updated. Put your new functionality into a function with a docstring, and add the feature to the list in `README.md`.

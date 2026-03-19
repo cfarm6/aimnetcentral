@@ -9,7 +9,7 @@ authors = [
 ]
 description = "AIMNet Machine Learned Interatomic Potential"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 keywords = [
     "machine learning",
@@ -52,6 +52,11 @@ ase = [
 # PySisyphus calculator integration
 pysis = [
     "pysisyphus",
+]
+
+# TorchSim calculator integration
+torchsim = [
+    "torch-sim-atomistic>=0.5.2,<0.6.0"
 ]
 
 # Training dependencies
@@ -187,6 +192,7 @@ disable_error_code = ["import-untyped"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
+    "torch_sim: marks tests that require TorchSim (deselect with: -m 'not torch_sim')",
     "ase: marks tests that require ASE (deselect with: -m 'not ase')",
     "gpu: marks tests that require GPU/CUDA (deselect with: -m 'not gpu')",
     "pysis: marks tests that require PySisyphus (deselect with: -m 'not pysis')",

@@ -2,9 +2,9 @@ import os
 from time import perf_counter
 
 import ase.io
-from ase.optimize import LBFGS
+import torch_sim as ts
 
-from aimnet.calculators import AIMNet2ASE
+from aimnet.calculators import AIMNet2Calculator, AIMNet2TorchSim
 
 
 def torch_show_device_into():
@@ -25,19 +25,17 @@ xyzfile = os.path.join(os.path.dirname(__file__), "taxol.xyz")
 atoms = ase.io.read(xyzfile, index=0)
 
 # create the calculator with default model
-calc = AIMNet2ASE()
+base_calc = AIMNet2Calculator("aimnet2")
+calc = AIMNet2TorchSim(base_calc)
 
-# attach the calculator to the atoms object
-atoms.calc = calc  # type: ignore
-
-# setup optimizer
-opt = LBFGS(atoms)
-
-# run optimization
 t0: int | float = perf_counter()
-print(f"Running optimization for {len(atoms)} atoms molecule.")
-opt.run(fmax=0.01)
-t1 = perf_counter()
+n_systems = 500
+systems = [atoms] * n_systems
+for _i in range(n_systems):
+    systems[_i].info["charge"] = _i / n_systems
 
-print(f"Total optimition steps: {opt.nsteps}")
-print(f"Completed optimization in {t1 - t0:.1f} s ({(t1 - t0) / opt.nsteps:.3f} s/step)")
+print(f"Running optimization for {len(atoms)} atoms molecule with {n_systems} systems.")
+final_state = ts.optimize(system=systems, model=calc, optimizer=ts.Optimizer.fire, autobatcher=True, pbar=True)
+final_atoms = final_state.to_atoms()
+t1 = perf_counter()
+print(f"Completed optimization in {t1 - t0:.1f} s")
