@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
@@ -32,10 +33,10 @@ dynamic = ["version"]
 
 # Minimal core dependencies for inference
 dependencies = [
-    "torch>=2.4",
+    "torch>=2.8",
     "numpy",
-    "warp-lang>=1.11",
-    "nvalchemi-toolkit-ops>=0.2",
+    "warp-lang>=1.11,<2",
+    "nvalchemi-toolkit-ops>=0.3",
     "requests>=2.32.3",
     "click>=8.1.7",
     "pyyaml>=6.0.2",
@@ -48,7 +49,7 @@ allow-direct-references = true
 [project.optional-dependencies]
 # ASE calculator integration
 ase = [
-    "ase==3.27.0",
+    "ase>=3.27.0,<4",
 ]
 
 # PySisyphus calculator integration
@@ -66,6 +67,12 @@ train = [
     "omegaconf>=2.3.0",
     "wandb>=0.18.5",
     "pytorch-ignite>=0.5.1",
+]
+
+# Hugging Face Hub integration
+hf = [
+    "huggingface_hub>=0.20",
+    "safetensors>=0.4",
 ]
 
 [project.scripts]
@@ -120,6 +127,8 @@ docs = [
     "mkdocs>=1.4.2",
     "mkdocs-material>=9.2.7",
     "mkdocstrings[python]>=0.26.1",
+    "griffe<3",
+    "pygments<2.21",
 ]
 
 # Ruff configuration
@@ -197,6 +206,7 @@ markers = [
     "torch_sim: marks tests that require TorchSim (deselect with: -m 'not torch_sim')",
     "ase: marks tests that require ASE (deselect with: -m 'not ase')",
     "gpu: marks tests that require GPU/CUDA (deselect with: -m 'not gpu')",
+    "hf: marks tests that require Hugging Face extras (deselect with: -m 'not hf')",
     "pysis: marks tests that require PySisyphus (deselect with: -m 'not pysis')",
     "train: marks tests that require training dependencies (deselect with: -m 'not train')",
 ]

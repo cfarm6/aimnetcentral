@@ -7,6 +7,10 @@ on:
         branches: [main]
     workflow_dispatch:
 
+concurrency:
+    group: gpu-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     tests-gpu:
         runs-on: [self-hosted, gpu]
@@ -15,7 +19,7 @@ jobs:
                 shell: bash
         steps:
             - name: Check out
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Set up Python
               uses: actions/setup-python@v6

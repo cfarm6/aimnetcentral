@@ -1,10 +1,12 @@
 import math
+import os
+import re
 import warnings
 from typing import Any, ClassVar, Literal
 
 import torch
-from nvalchemiops.neighborlist import neighbor_list
-from nvalchemiops.neighborlist.neighbor_utils import NeighborOverflowError
+from nvalchemiops.neighbors import NeighborOverflowError
+from nvalchemiops.torch.neighbors import neighbor_list
 from torch import Tensor, nn
 
 from aimnet.models.base import load_model
@@ -16,7 +18,7 @@ from .model_registry import get_model_path
 class AdaptiveNeighborList:
     """Adaptive neighbor list with automatic buffer sizing.
 
-    Wraps nvalchemiops.neighborlist.neighbor_list with automatic max_neighbors adjustment.
+    Wraps nvalchemiops.torch.neighbors.neighbor_list with automatic max_neighbors adjustment.
     Maintains ~75% utilization to balance memory and recomputation.
 
     Parameters
@@ -225,6 +227,9 @@ class AIMNet2Calculator:
         compile_model: bool = False,
         compile_kwargs: dict | None = None,
         train: bool = False,
+        ensemble_member: int = 0,
+        revision: str | None = None,
+        token: str | None = None,
     ):
         # Device selection: use provided or auto-detect
         if device is not None:
@@ -240,10 +245,41 @@ class AIMNet2Calculator:
 
         # Load model and get metadata
         metadata: dict | None = None
+        # Inline org/name pattern — exactly one slash, both segments alphanumeric+._-
+        # This avoids importing optional HF deps for ordinary file paths containing slashes.
+        _HF_ID_RE = re.compile(r"^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$")
         if isinstance(model, str):
-            p = get_model_path(model)
-            self.model, metadata = load_model(p, device=self.device)
-            self.cutoff = metadata["cutoff"]
+            # Check for HF repo ID or local HF-style directory
+            # (lazy import to keep safetensors/huggingface_hub optional)
+            _is_hf_dir = os.path.isdir(model)
+            _looks_like_hf = bool(_HF_ID_RE.match(model))
+            if _looks_like_hf or _is_hf_dir:
+                try:
+                    from aimnet.calculators.hf_hub import is_hf_repo_id, load_from_hf_repo
+                except ImportError:
+                    raise ImportError(
+                        f"Loading from HF repo '{model}' requires optional dependencies. "
+                        "Install with: pip install aimnet[hf]"
+                    ) from None
+                if is_hf_repo_id(model) or _is_hf_dir:
+                    _model, metadata = load_from_hf_repo(
+                        model,
+                        ensemble_member=ensemble_member,
+                        device=self.device,
+                        revision=revision,
+                        token=token,
+                    )
+                    self.model = _model
+                    self.cutoff = metadata["cutoff"]
+                else:
+                    # _looks_like_hf matched but it's a local file path — fall through
+                    p = get_model_path(model)
+                    self.model, metadata = load_model(p, device=self.device)
+                    self.cutoff = metadata["cutoff"]
+            else:
+                p = get_model_path(model)
+                self.model, metadata = load_model(p, device=self.device)
+                self.cutoff = metadata["cutoff"]
         elif isinstance(model, nn.Module):
             self.model = model.to(self.device)
             self.cutoff = getattr(self.model, "cutoff", 5.0)
@@ -698,7 +734,10 @@ class AIMNet2Calculator:
         if hessian and "mol_idx" in data and data["mol_idx"][-1] > 0:
             raise NotImplementedError("Hessian calculation is not supported for multiple molecules")
         data = self.set_grad_tensors(data, forces=forces, stress=stress, hessian=hessian)
-        with torch.jit.optimized_execution(False):  # type: ignore
+        if isinstance(self.model, torch.jit.ScriptModule):
+            with torch.jit.optimized_execution(False):  # type: ignore
+                data = self.model(data)
+        else:
             data = self.model(data)
         # Run external modules if present
         data = self._run_external_modules(data, compute_stress=stress)
@@ -742,11 +781,18 @@ class AIMNet2Calculator:
         for k in self.keys_in:
             if k not in data:
                 raise KeyError(f"Missing key {k} in the input data")
-            # Detach from computation graph to prevent gradient accumulation
-            ret[k] = torch.as_tensor(data[k], device=self.device, dtype=self.keys_in[k]).detach()
+            t = torch.as_tensor(data[k], device=self.device, dtype=self.keys_in[k])
+            # Preserve autograd graph when caller sets requires_grad=True (e.g. for external Hessian computation).
+            # Otherwise detach to prevent unintended gradient accumulation in optimization loops.
+            if not (isinstance(data[k], Tensor) and data[k].requires_grad):
+                t = t.detach()
+            ret[k] = t
         for k in self.keys_in_optional:
             if k in data and data[k] is not None:
-                ret[k] = torch.as_tensor(data[k], device=self.device, dtype=self.keys_in_optional[k]).detach()
+                t = torch.as_tensor(data[k], device=self.device, dtype=self.keys_in_optional[k])
+                if not (isinstance(data[k], Tensor) and data[k].requires_grad):
+                    t = t.detach()
+                ret[k] = t
         # Ensure all tensors have at least 1D shape for consistent batch processing
         for k, v in ret.items():
             if v.ndim == 0:

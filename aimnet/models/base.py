@@ -40,6 +40,7 @@ class ModelMetadata(TypedDict):
 
     # Dispersion parameters (optional)
     d3_params: NotRequired[dict | None]  # {s8, a1, a2, s6} if needs_dispersion=True
+    has_embedded_lr: NotRequired[bool]  # True if model has embedded LR (legacy or D3TS)
 
     implemented_species: list[int]  # Supported atomic numbers
 
@@ -72,10 +73,15 @@ def load_model(path: str, device: str = "cpu") -> tuple[nn.Module, ModelMetadata
     """
     import yaml
 
-    # torch.load auto-detects TorchScript and dispatches to torch.jit.load
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", ".*looks like a TorchScript archive.*")
-        data = torch.load(path, map_location=device, weights_only=False)
+    # Try weights_only=True first (secure for new .pt format).
+    # Falls back to weights_only=False for legacy TorchScript .jpt archives,
+    # which require full deserialization to load the frozen computation graph.
+    try:
+        data = torch.load(path, map_location=device, weights_only=True)
+    except Exception:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*looks like a TorchScript archive.*")
+            data = torch.load(path, map_location=device, weights_only=False)
 
     # Check result type to determine format
     if isinstance(data, dict) and "model_yaml" in data:
