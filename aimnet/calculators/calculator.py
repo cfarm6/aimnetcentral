@@ -779,6 +779,18 @@ class AIMNet2Calculator:
                 for k, v in data.items():
                     if k in self.atom_feature_keys:
                         data[k] = v.flatten(0, 1)
+                # Flattened path uses nb_mode=1 with a single stacked system; map per-batch local
+                # region ids to global ids so regions from different batch items do not collide.
+                if "region_mask" in data and "region_charges" in data:
+                    rm = data["region_mask"]
+                    if rm.ndim == 3 and rm.shape[-1] == 1:
+                        rm = rm.squeeze(-1)
+                    r_max = int(rm.max().item()) + 1
+                    mol_idx = data["mol_idx"]
+                    data["region_mask"] = mol_idx * r_max + rm.reshape(-1)
+                    rc = data["region_charges"]
+                    if rc.ndim == 2:
+                        data["region_charges"] = rc.reshape(-1)
             else:
                 self._batch = None
             self._max_mol_size = N

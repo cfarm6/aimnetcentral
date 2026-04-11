@@ -524,9 +524,9 @@ class TestRegionSum:
 
         res = nbops.region_sum(x, data)
 
-        # Two regions, single feature
-        assert res.shape == (2, 1)
+        # Two regions, single feature: (batch, n_regions, 1)
+        assert res.shape == (1, 2, 1)
         # Region 0: atoms 0 and 2 -> 1.0 + 3.0
-        assert res[0, 0].item() == pytest.approx(4.0, abs=1e-6)
+        assert res[0, 0, 0].item() == pytest.approx(4.0, abs=1e-6)
         # Region 1: atom 1 -> 2.0
-        assert res[1, 0].item() == pytest.approx(2.0, abs=1e-6)
+        assert res[0, 1, 0].item() == pytest.approx(2.0, abs=1e-6)

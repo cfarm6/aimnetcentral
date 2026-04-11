@@ -246,11 +246,17 @@ def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
     if nb_mode == 0:  # [Batch, N_atoms, FeatureSize]
         # Dense batched format: x is typically (B, N, C) or (B, N).
         assert x.ndim in (2, 3), "Invalid tensor shape for region_sum in nb_mode=0, ndim should be 2 or 3"
-        idx = data["region_mask"]  # [Batch, N_atoms, 1]
-        out_size = (int(x.shape[0]), int(idx.max().item() + 1), 1)
-        # [Batch, N_Regions, 1]
+        idx = data["region_mask"]
+        if idx.ndim > 1 and idx.shape[-1] == 1:
+            idx = idx.squeeze(-1)
+        idx = idx.to(dtype=torch.long)
+        # Per-batch scatter along the region axis; R = max local region id + 1 (same for all batch rows).
+        n_batch, n_regions = int(x.shape[0]), int(idx.max().item()) + 1
+        out_size = (n_batch, n_regions, 1)
         res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
-        res.scatter_add_(1, idx, x)
+        if x.ndim == 2:
+            x = x.unsqueeze(-1)
+        res.scatter_add_(1, idx.unsqueeze(-1), x)
         return res
         # # Ensure region_mask aligns with first two dimensions (batch, atom)
         # # and collapse batch/atom into a single index dimension.

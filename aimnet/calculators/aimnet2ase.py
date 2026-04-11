@@ -67,6 +67,16 @@ class AIMNet2ASE(Calculator):
         self.reset()
         self.atoms = atoms
 
+    @staticmethod
+    def _info_entry_equal(a: object, b: object) -> bool:
+        if a is None and b is None:
+            return True
+        if a is None or b is None:
+            return False
+        if isinstance(a, np.ndarray | np.generic) or isinstance(b, np.ndarray | np.generic):
+            return np.array_equal(np.asarray(a), np.asarray(b))
+        return bool(a == b)
+
     def check_state(self, atoms, tol=1e-15):
         state = super().check_state(atoms, tol=tol)
         if (not state) and getattr(self, "atoms", None) is not None:
@@ -75,7 +85,14 @@ class AIMNet2ASE(Calculator):
             new_info = getattr(atoms, "info", {})
 
             # Check charge
-            if old_info.get("charge") != new_info.get("charge"):
+            if (
+                old_info.get("charge") != new_info.get("charge")
+                or not self._info_entry_equal(old_info.get("region_mask"), new_info.get("region_mask"))
+                or not self._info_entry_equal(
+                    old_info.get("region_charges", old_info.get("region_charge")),
+                    new_info.get("region_charges", new_info.get("region_charge")),
+                )
+            ):
                 state.append("info")
 
             # Check spin/multiplicity (NSE models only)
@@ -158,6 +175,33 @@ class AIMNet2ASE(Calculator):
         if self._t_mult is None:
             self._t_mult = torch.tensor(self.mult, dtype=torch.float32, device=self.base_calc.device)
 
+    def _region_constraint_tensors_from_info(
+        self,
+    ) -> tuple[torch.Tensor, torch.Tensor] | None:
+        """Build `region_mask` / `region_charges` from `atoms.info` if present.
+
+        Supported keys: ``region_mask`` (per-atom region indices) and
+        ``region_charges`` or ``region_charge`` (target charge per region, length
+        ``max(mask)+1``).
+        """
+        atoms = getattr(self, "atoms", None)
+        if atoms is None:
+            return None
+        info = getattr(atoms, "info", {})
+        if "region_mask" not in info:
+            return None
+        targets = info.get("region_charges", info.get("region_charge"))
+        if targets is None:
+            return None
+        rm = np.asarray(info["region_mask"], dtype=np.int64)
+        if rm.shape != (len(atoms),):
+            raise ValueError(f"atoms.info['region_mask'] must have shape ({len(atoms)},), got {rm.shape}")
+        rt = np.asarray(targets, dtype=np.float64).reshape(-1)
+        device = self.base_calc.device
+        mask_t = torch.as_tensor(rm, device=device, dtype=torch.int64).unsqueeze(-1)
+        charges_t = torch.as_tensor(rt, dtype=torch.float32, device=device)
+        return mask_t, charges_t
+
     def get_dipole_moment(self, atoms):
         charges = self.get_charges()[:, np.newaxis]
         positions = atoms.get_positions()
@@ -189,7 +233,10 @@ class AIMNet2ASE(Calculator):
             "mult": self._t_mult,  # []
         }
         _unsqueezed = False
-        if self.charge_constraints is not None:
+        region_from_info = self._region_constraint_tensors_from_info()
+        if region_from_info is not None:
+            _in["region_mask"], _in["region_charges"] = region_from_info
+        elif self.charge_constraints is not None:
             mask = torch.zeros(len(self.atoms), dtype=torch.int64, device=self.base_calc.device)
             for constraint_idx, constraint in enumerate(self.charge_constraints):
                 mask[constraint.region_indices] = constraint_idx

@@ -128,9 +128,12 @@ def nse(
             F_u_R = nbops.region_sum(f_u, data)
             Q_u_R = nbops.region_sum(q_u, data)
             dQ_u_R = data["region_charges"].unsqueeze(-1) - Q_u_R
-            dQ = torch.gather(dQ_u_R, 1, data["region_mask"])
+            _rm = data["region_mask"]
+            if _rm.ndim == 2:
+                _rm = _rm.unsqueeze(-1)
+            dQ = torch.gather(dQ_u_R, 1, _rm)
             # F_u = F_u.unsqueeze(-2)
-            F_u = torch.gather(F_u_R, 1, data["region_mask"])
+            F_u = torch.gather(F_u_R, 1, _rm)
         else:
             F_u = F_u.unsqueeze(-2)
             dQ = dQ.unsqueeze(-2)

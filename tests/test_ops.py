@@ -374,8 +374,8 @@ class TestNSE:
 
         # Three atoms split into two regions: [0, 1, 0]
         data["region_mask"] = torch.tensor([[0, 1, 0]], device=device)
-        # Target charges per region: region 0 -> +0.5, region 1 -> -0.5
-        region_charges = torch.tensor([0.5, -0.5], device=device).unsqueeze(-1)
+        # Target charges per region: region 0 -> +0.5, region 1 -> -0.5  (shape B, R)
+        region_charges = torch.tensor([[0.5, -0.5]], device=device)
         data["region_charges"] = region_charges
 
         # Unconstrained charges and flexibilities
@@ -388,8 +388,8 @@ class TestNSE:
 
         # Check that per-region sums match targets
         q_region = nbops.region_sum(q, data)
-        assert q_region.shape == region_charges.shape
-        assert torch.allclose(q_region, region_charges, atol=1e-5)
+        assert q_region.shape == (1, 2, 1)
+        assert torch.allclose(q_region, region_charges.unsqueeze(-1), atol=1e-5)
 
 
 class TestTransitionFunctions:
