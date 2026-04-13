@@ -62,7 +62,7 @@ def main() -> None:
     rc_b = torch.tensor([0.25, -0.25, 0.0], dtype=torch.float32)
     region_charges = torch.stack([rc_a, rc_b], dim=0)  # (2, R_max)
 
-    base_calc = AIMNet2Calculator("aimnet2_2025", nb_threshold=max(n_atoms + 1, 256))
+    base_calc = AIMNet2Calculator("aimnet2_2025")
     device = torch.device(base_calc.device)
     dtype = torch.float32
     model = AIMNet2TorchSim(base_calc)
