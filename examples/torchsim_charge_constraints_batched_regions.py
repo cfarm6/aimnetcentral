@@ -23,6 +23,7 @@ Run (requires ``torch-sim-atomistic``):
 """
 
 import os
+from typing import TYPE_CHECKING
 
 import ase.io
 import torch
@@ -30,6 +31,9 @@ import torch_sim as ts
 
 from aimnet.calculators import AIMNet2Calculator
 from aimnet.calculators.aimnet2torchsim import AIMNet2TorchSim
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 def main() -> None:
@@ -64,8 +68,8 @@ def main() -> None:
     model = AIMNet2TorchSim(base_calc)
 
     # Two ASE systems (same geometry, different total charge in info); batched via torch-sim IO.
-    atoms_0 = atoms.copy()
-    atoms_1 = atoms.copy()
+    atoms_0: Atoms = atoms.copy()
+    atoms_1: Atoms = atoms.copy()
     atoms_0.info["charge"] = float(region_charges[0].sum().item())
     atoms_1.info["charge"] = float(region_charges[1].sum().item())
     atoms_0.info["region_mask"] = region_mask[0]
