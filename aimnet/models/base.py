@@ -174,6 +174,8 @@ class AIMNet2Base(nn.Module):
         "nbmat_coulomb",
         "shifts_coulomb",
         "cutoff_coulomb",
+        "region_mask",
+        "region_charges",
     ]
     _optional_keys_dtype: Final = [
         __default_dtype,  # mult
@@ -189,6 +191,8 @@ class AIMNet2Base(nn.Module):
         torch.int64,  # nbmat_coulomb
         __default_dtype,  # shifts_coulomb
         __default_dtype,  # cutoff_coulomb
+        torch.int64,  # region_mask
+        torch.float32,  # region_charges
     ]
     __constants__: ClassVar = ["_required_keys", "_required_keys_dtype", "_optional_keys", "_optional_keys_dtype"]
     # TypedDict not supported in TorchScript; exclude from serialization

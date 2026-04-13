@@ -57,7 +57,6 @@ def main() -> None:
     rc_a = torch.tensor([-1.0, 1.0, 0.0], dtype=torch.float32)
     rc_b = torch.tensor([0.25, -0.25, 0.0], dtype=torch.float32)
     region_charges = torch.stack([rc_a, rc_b], dim=0)  # (2, R_max)
-    r_max = region_charges.shape[1]
 
     base_calc = AIMNet2Calculator("aimnet2_2025", nb_threshold=max(n_atoms + 1, 256))
     device = torch.device(base_calc.device)
@@ -69,21 +68,29 @@ def main() -> None:
     atoms_1 = atoms.copy()
     atoms_0.info["charge"] = float(region_charges[0].sum().item())
     atoms_1.info["charge"] = float(region_charges[1].sum().item())
+    atoms_0.info["region_mask"] = region_mask[0]
+    atoms_1.info["region_mask"] = region_mask[1]
+    atoms_0.info["region_charges"] = region_charges[0]
+    atoms_1.info["region_charges"] = region_charges[1]
 
-    state = ts.io.atoms_to_state([atoms_0, atoms_1], device=device, dtype=dtype)
-    # Flat multi-system: offset region ids so nb_mode=1 region sums stay per-system.
-    region_mask_flat = torch.cat([
-        region_mask[0].to(device),
-        region_mask[1].to(device) + r_max,
-    ])
-    region_charges_flat = torch.cat([region_charges[0].to(device), region_charges[1].to(device)])
-
-    state.region_mask = region_mask_flat
-    state.region_charges = region_charges_flat
-    print(state.region_charges)
-    static_model = ts.static(state, model)
-    # Per-region sums vs targets are printed inside AIMNet2TorchSim.forward (TorchSim has no ``charges``).
-    print([out["potential_energy"] for out in static_model])
+    state = ts.io.atoms_to_state(
+        [atoms_0, atoms_1],
+        device=device,
+        dtype=dtype,
+        system_extras_map={
+            "charge": "charge",
+            "region_mask": "region_mask",
+            "region_charges": "region_charges",
+        },
+    )
+    static_model = ts.optimize(
+        state,
+        model,
+        optimizer=ts.Optimizer.fire,
+        # autobatcher=False
+        # autobatcher=True
+    )
+    print([out.energy for out in static_model])
 
 
 if __name__ == "__main__":

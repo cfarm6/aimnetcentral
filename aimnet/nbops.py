@@ -252,47 +252,57 @@ def region_sum(x: Tensor, data: dict[str, Tensor]) -> Tensor:
             x = x.unsqueeze(-1)
         res.scatter_add_(1, idx.unsqueeze(-1), x)
         return res
-        # # Ensure region_mask aligns with first two dimensions (batch, atom)
-        # # and collapse batch/atom into a single index dimension.
-        # while idx.ndim < 2:
-        #     idx = idx.unsqueeze(0)
-        # if idx.shape[0] != x.shape[0] or idx.shape[1] != x.shape[1]:
-        #     raise ValueError(f"region_mask must have shape (B, N) or be broadcastable to it in nb_mode=0., idx.shape: {idx.shape}, x.shape: {x.shape}")
-        # idx = idx.reshape(-1)
-
-        # x_flat = x.reshape(x.shape[0] * x.shape[1], -1)
-        # out_size = int(idx.max().item() + 1)
-        # res = torch.zeros(out_size, x_flat.shape[1], device=x.device, dtype=x.dtype)
-        # res.index_add_(0, idx, x_flat)
 
     elif nb_mode == 1:
+        # TODO: The region sum should also account for using the mol_idx to determine the regions before region_id summation.
         assert x.ndim in (
             1,
             2,
         ), "Invalid tensor shape for region_sum, ndim should be 1 or 2"
-        idx = data["region_mask"]
-        if idx.ndim > 1:
-            idx = idx.reshape(-1)
+        region_idx = data["region_mask"]
+        mol_idx = data["mol_idx"]
+        if region_idx.ndim > 1:
+            region_idx = region_idx.reshape(-1)
+        if mol_idx.ndim > 1:
+            mol_idx = mol_idx.reshape(-1)
         # nb_mode=1 inputs are commonly padded by one extra "dummy" atom at the end.
         # `region_mask` often comes from external constraints and may omit that final
         # padding entry. If so, pad it with any valid region index; the padded atom's
         # contributions should be zeroed elsewhere.
-        if idx.numel() == x.shape[0] - 1:
-            pad_val = idx[-1] if idx.numel() > 0 else idx.new_zeros(())
-            idx = torch.cat([idx, pad_val.reshape(1)], dim=0)
-        if idx.numel() != x.shape[0]:
+
+        if region_idx.numel() == x.shape[0] - 1:
+            pad_val = region_idx[-1] if region_idx.numel() > 0 else region_idx.new_zeros(())
+            region_idx = torch.cat([region_idx, pad_val.reshape(1)], dim=0)
+
+        if mol_idx.numel() == x.shape[0] - 1:
+            pad_val = mol_idx[-1] if mol_idx.numel() > 0 else mol_idx.new_zeros(())
+            mol_idx = torch.cat([mol_idx, pad_val.reshape(1)], dim=0)
+
+        if region_idx.numel() != x.shape[0]:
             raise ValueError(
                 "region_mask shape mismatch for nb_mode=1: "
-                f"expected {x.shape[0]} entries, got {idx.numel()} (idx.shape={tuple(data['region_mask'].shape)}, x.shape={tuple(x.shape)})"
+                f"expected {x.shape[0]} entries, got {region_idx.numel()} (region_idx.shape={tuple(data['region_mask'].shape)}, x.shape={tuple(x.shape)})"
+            )
+        if mol_idx.numel() != x.shape[0]:
+            raise ValueError(
+                "region_mask shape mismatch for nb_mode=1: "
+                f"expected {x.shape[0]} entries, got {mol_idx.numel()} (mol_idx.shape={tuple(data['mol_idx'].shape)}, x.shape={tuple(x.shape)})"
             )
 
-        out_size = int(idx.max().item()) + 1
+        num_molecules = mol_idx.max().item() + 1
+        regions_per_input = torch.zeros(num_molecules, dtype=torch.long, device=x.device)
+        regions_per_input.scatter_reduce_(0, mol_idx.squeeze(), region_idx.squeeze(), reduce="amax", include_self=True)
+        regions_per_input += 1  # max index -> count
+        offsets = torch.zeros(num_molecules, dtype=torch.long, device=x.device)
+        offsets[1:] = regions_per_input[:-1].cumsum(0)
+        global_region_idx = region_idx + offsets[mol_idx]
+        total_regions = regions_per_input.sum().item()
         if x.ndim == 1:
-            res = torch.zeros(out_size, device=x.device, dtype=x.dtype)
+            res = torch.zeros(total_regions, device=x.device, dtype=x.dtype)
         else:
-            idx = idx.unsqueeze(-1).expand(-1, x.shape[1])
-            res = torch.zeros(out_size, x.shape[1], device=x.device, dtype=x.dtype)
-        res.scatter_add_(0, idx, x)
+            global_region_idx = global_region_idx.unsqueeze(-1).expand(-1, x.shape[1])
+            res = torch.zeros(total_regions, x.shape[1], device=x.device, dtype=x.dtype)
+        res.scatter_add_(0, global_region_idx, x)
         return res
     elif nb_mode == 2:
         raise NotImplementedError(

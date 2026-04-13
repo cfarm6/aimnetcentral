@@ -19,106 +19,68 @@ from .calculator import AIMNet2Calculator
 
 try:
     import torch_sim as ts
-    from torch_sim.models.interface import ModelInterface, SimState, StateDict
+    from torch_sim.models.interface import ModelInterface
+    from torch_sim.state import SimState
 except ImportError:
     raise ImportError("torch-sim is not installed. Please install it using `pip install torch-sim-atomistic`.")  # noqa: B904
+
+
+def ts_data_to_aimnet2_data(
+    positions: torch.Tensor,
+    cell: torch.Tensor | None,
+    numbers: torch.Tensor,
+    charge: torch.Tensor | None,
+    mult: torch.Tensor | None,
+    mol_idx: torch.Tensor,
+    region_mask: torch.Tensor | None,
+    region_charges: torch.Tensor | None,
+) -> dict[str, torch.Tensor]:
+    data = dict[str, torch.Tensor]()
+    data["coord"] = positions.contiguous()
+    data["numbers"] = numbers.contiguous()
+    if charge is not None:
+        data["charge"] = charge.contiguous()
+    if mult is not None:
+        data["mult"] = mult.contiguous()
+    if mol_idx is not None:
+        data["mol_idx"] = mol_idx.contiguous()
+    if region_mask is not None:
+        data["region_mask"] = region_mask.contiguous()
+    if region_charges is not None:
+        data["region_charges"] = region_charges.flatten().contiguous()
+    if isinstance(cell, torch.Tensor) and not torch.allclose(cell, torch.zeros_like(cell)):
+        data["cell"] = cell.contiguous()
+    return data
 
 
 def state_to_aimnet2_data(state: ts.SimState) -> dict[str, torch.Tensor]:
     positions = state.positions.contiguous()
     cell = state.row_vector_cell
     z = state.atomic_numbers.long().contiguous()
-    charge = state.charge.contiguous()
+    charge = state.system_extras.get("charge", None)
+    if charge is not None:
+        charge = charge.contiguous()
     mol_idx = state.system_idx.contiguous()
-
-    # TorchSim "spin" corresponds to AIMNet2 NSE "mult" (multiplicity).
-    # For closed-shell models, this value is ignored by AIMNet2.
     mult = getattr(state, "spin", None)
-    data = {
-        "coord": positions,
-        "numbers": z,
-        "charge": charge,
-        "mol_idx": mol_idx,
-    }
-    if isinstance(mult, torch.Tensor):
-        data["mult"] = mult.contiguous()
-    # Optional charge-region constraints for NSE / region-constrained charge equilibration.
-    # These are consumed by AIMNet2Calculator (ops.nse via `region_mask` / `region_charges`).
-    region_mask = getattr(state, "region_mask", None)
-    if isinstance(region_mask, torch.Tensor):
-        # Base calculator expects `region_mask` without an extra feature dim.
-        if region_mask.ndim > 1 and region_mask.shape[-1] == 1:
-            region_mask = region_mask.squeeze(-1)
-        data["region_mask"] = region_mask
-    region_charges = getattr(state, "region_charges", None)
-    if not isinstance(region_charges, torch.Tensor):
-        region_charges = getattr(state, "region_charge", None)
-    if isinstance(region_charges, torch.Tensor):
-        # For flat coord inputs, AIMNet2Calculator will do an extra
-        # `unsqueeze(-1)` on `region_charges`, so keep it 1D to avoid
-        # accidentally producing shape (R, 1, 1).
-        if region_charges.ndim > 1 and region_charges.shape[-1] == 1:
-            region_charges = region_charges.squeeze(-1)
-        data["region_charges"] = region_charges
-    # Handle periodic cells:
-    # - If cell is all zeros, treat as non-periodic and omit "cell"
-    # - If all batched cells are identical, use a single (3, 3) cell
-    # - Otherwise, keep the batched (B, 3, 3) cell so each system can have its own box
-    # Ensure we are working with a tensor (torch-sim may return None for non-periodic systems)
-    # Keep the cell tensor rank consistent with the incoming state to avoid
-    # downstream shape differences (e.g. stress rank changes) across chunks.
-    if isinstance(cell, torch.Tensor) and not torch.allclose(cell, torch.zeros_like(cell)):
-        data["cell"] = cell.contiguous()
-    return data
+    region_mask = state.system_extras.get("region_mask", None)
+    region_charges = state.system_extras.get("region_charges", None)
+    return ts_data_to_aimnet2_data(positions, cell, z, charge, mult, mol_idx, region_mask, region_charges)
 
 
-def state_dict_to_aimnet2_data(state: StateDict) -> dict[str, torch.Tensor]:
-    # TorchSim's `StateDict` typing is narrow; for wrapper logic we treat it as a
-    # generic string->tensor mapping (runtime keys may include `charge`, `spin`, ...).
+def state_dict_to_aimnet2_data(state: dict) -> dict[str, torch.Tensor]:
     state_dict = cast(dict[str, torch.Tensor], state)
-    data: dict[str, torch.Tensor] = {}
-
-    if "positions" in state_dict:
-        data["coord"] = state_dict["positions"].contiguous()
-    if "cell" in state_dict:
-        data["cell"] = state_dict["cell"].contiguous()
-    if "atomic_numbers" in state_dict:
-        data["numbers"] = state_dict["atomic_numbers"].contiguous()
-    if "charge" in state_dict:
-        data["charge"] = state_dict["charge"].contiguous()
-
-    # TorchSim uses `spin`; AIMNet2 expects NSE `mult` (multiplicity).
-    mult = state_dict.get("mult")
-    if mult is None:
-        mult = state_dict.get("spin")
-    if isinstance(mult, torch.Tensor):
-        data["mult"] = mult.contiguous()
-
-    # torch-sim typically uses `system_idx` but we also accept `mol_idx` if present.
-    if "mol_idx" in state_dict:
-        data["mol_idx"] = state_dict["mol_idx"].contiguous()
-    elif "system_idx" in state_dict:
-        data["mol_idx"] = state_dict["system_idx"].contiguous()
-
-    # Optional region-wise charge constraints
-    if "region_mask" in state_dict:
-        region_mask = state_dict["region_mask"]
-        if region_mask.ndim > 1 and region_mask.shape[-1] == 1:
-            region_mask = region_mask.squeeze(-1)
-        data["region_mask"] = region_mask
-    _rc = state_dict.get("region_charges")
-    if _rc is None:
-        _rc = state_dict.get("region_charge")
-    if isinstance(_rc, torch.Tensor):
-        region_charges = _rc
-        if region_charges.ndim > 1 and region_charges.shape[-1] == 1:
-            region_charges = region_charges.squeeze(-1)
-        data["region_charges"] = region_charges
-
+    positions = state_dict.get("positions")
+    assert positions is not None, "positions is required"
     cell = state_dict.get("cell", None)
-    if isinstance(cell, torch.Tensor) and not torch.allclose(cell, torch.zeros_like(cell)):
-        data["cell"] = cell.contiguous()
-    return data
+    numbers = state_dict.get("atomic_numbers", None)
+    assert numbers is not None, "atomic_numbers is required"
+    charge = state_dict.get("charge", None)
+    mult = state_dict.get("mult", None)
+    mol_idx = state_dict.get("mol_idx", None)
+    assert mol_idx is not None, "mol_idx is required"
+    region_mask = state_dict.get("region_mask", None)
+    region_charges = state_dict.get("region_charges", None)
+    return ts_data_to_aimnet2_data(positions, cell, numbers, charge, mult, mol_idx, region_mask, region_charges)
 
 
 class AIMNet2TorchSim(ModelInterface):
@@ -154,7 +116,9 @@ class AIMNet2TorchSim(ModelInterface):
         """
         super().__init__()
         self.model = base_calc
-        self._device = torch.device(base_calc.device)
+        if device is None:
+            device = torch.device(base_calc.device)
+        self._device = device
         try:
             params_fn = getattr(base_calc.model, "parameters", None)
             model_dtype = next(params_fn()).dtype if callable(params_fn) else torch.float32
@@ -181,7 +145,7 @@ class AIMNet2TorchSim(ModelInterface):
     def device(self) -> torch.device:
         return self._device
 
-    def forward(self, state: SimState | StateDict, return_charges: bool = True, **kwargs) -> dict[str, torch.Tensor]:
+    def forward(self, state: SimState | dict, return_charges: bool = True, **kwargs) -> dict[str, torch.Tensor]:
         """Compute energies, forces, and other properties.
 
         Args:
@@ -206,7 +170,6 @@ class AIMNet2TorchSim(ModelInterface):
 
         compute_forces = _maybe_bool(kwargs.get("forces", self._compute_forces), self._compute_forces)
         compute_stress = _maybe_bool(kwargs.get("stress", self._compute_stress), self._compute_stress)
-        print(state.region_charges)
         if isinstance(state, SimState):
             if state.device != self._device:
                 state = state.to(self._device)
