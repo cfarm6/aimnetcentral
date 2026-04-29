@@ -1,0 +1,5058 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AIMNet Machine Learned Interatomic Potential">
+      
+      
+        <meta name="author" content="Roman Zubatyuk">
+      
+      
+        <link rel="canonical" href="https://isayevlab.github.io/aimnetcentral/calculator/">
+      
+      
+        <link rel="prev" href="../external/lammps/">
+      
+      
+        <link rel="next" href="../long_range/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Calculator API - AIMNetCentral</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aimnet2calculator" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AIMNetCentral" class="md-header__button md-logo" aria-label="AIMNetCentral" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AIMNetCentral
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Calculator API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/isayevlab/aimnetcentral" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    isayevlab/aimnetcentral
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AIMNetCentral" class="md-nav__button md-logo" aria-label="AIMNetCentral" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AIMNetCentral
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/isayevlab/aimnetcentral" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    isayevlab/aimnetcentral
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Models
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2 (wB97M-D3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2_b973c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2-B97-3c
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2_2025/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2-2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2nse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2-NSE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2pd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2-Pd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/aimnet2_rxn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AIMNet2-rxn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Calculation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/geometry_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/molecular_dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/periodic_systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Periodic Systems
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/hugging_face/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loading from Hugging Face
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Use Cases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Use Cases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/open_shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open-Shell Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/conformer_search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/reaction_paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reaction Paths & TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/intermolecular_interactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non-Covalent Interactions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/transition_metal_catalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pd Catalysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/charged_systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charged Systems
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Packages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    External Packages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/ase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ASE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/pysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pysisyphus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/sella/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sella
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/openmm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenMM (openmm-ml)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/amber/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMBER (torchani-amber)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/ams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCM AMS (MLPotential)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/orca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA (ExtOpt)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/gromacs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GROMACS (NNPot)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external/lammps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAMMPS (mliap)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calculator API
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calculator API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-forces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Forces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-coulomb-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing Coulomb Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Constructor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nb_threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#needs_coulomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        needs_coulomb
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#needs_dispersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        needs_dispersion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_kwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_kwargs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensemble_member" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ensemble_member
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        revision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Properties
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff_lr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cutoff_lr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coulomb_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dftd3_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dftd3_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has_external_coulomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        has_external_coulomb
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has_external_dftd3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        has_external_dftd3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb_method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coulomb_method
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaldata-forcesfalse-stressfalse-hessianfalse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eval(data, forces=False, stress=False, hessian=False)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_lrcoulomb_methodmethod-cutoff150-dsf_alpha02-ewald_accuracy1e-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_lrcoulomb_method(method, cutoff=15.0, dsf_alpha=0.2, ewald_accuracy=1e-8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_lr_cutoffcutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_lr_cutoff(cutoff)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_dftd3_cutoffcutoffnone-smoothing_fractionnone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_dftd3_cutoff(cutoff=None, smoothing_fraction=None)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autograd-graph-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autograd Graph Preservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batching-and-neighbor-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batching and Neighbor Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batching and Neighbor Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dense-mode-on2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dense Mode (O(N²))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sparse-mode-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sparse Mode (O(N))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-2-batched-sparse-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode 2: Batched Sparse (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-right-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing the Right Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flattening-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flattening Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#periodic-boundary-conditions-pbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic Boundary Conditions (PBC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Periodic Boundary Conditions (PBC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-method-for-pbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Method for PBC
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neighbor-list-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbor List Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Neighbor List Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adaptive-neighbor-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptive Neighbor Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neighbor-list-format-and-padding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbor List Format and Padding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-suffix-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Suffix Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Placement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-lr-module-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External LR Module Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External LR Module Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lrcoulomb-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LRCoulomb Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dftd3-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DFTD3 Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-lr-modules-are-attached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How LR Modules Are Attached
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff-handling-for-lr-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cutoff Handling for LR Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Values
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Default Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lr-module-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LR Module Defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Defaults
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coulomb Defaults">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sr-coulomb-cutoff-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SR Coulomb Cutoff Constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-model-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy Model Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Warnings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardware-acceleration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Acceleration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-compute-neighbor-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-compute Neighbor Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-method-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Method Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-threading-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-threading (CPU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../long_range/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long-Range Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model_format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Format
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../train/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/calculators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calculators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-forces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Forces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-coulomb-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing Coulomb Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Constructor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nb_threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#needs_coulomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        needs_coulomb
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#needs_dispersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        needs_dispersion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_kwargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_kwargs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensemble_member" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ensemble_member
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        revision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Properties
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff_lr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cutoff_lr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coulomb_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dftd3_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dftd3_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has_external_coulomb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        has_external_coulomb
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#has_external_dftd3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        has_external_dftd3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb_method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coulomb_method
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evaldata-forcesfalse-stressfalse-hessianfalse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eval(data, forces=False, stress=False, hessian=False)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_lrcoulomb_methodmethod-cutoff150-dsf_alpha02-ewald_accuracy1e-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_lrcoulomb_method(method, cutoff=15.0, dsf_alpha=0.2, ewald_accuracy=1e-8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_lr_cutoffcutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_lr_cutoff(cutoff)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_dftd3_cutoffcutoffnone-smoothing_fractionnone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_dftd3_cutoff(cutoff=None, smoothing_fraction=None)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autograd-graph-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autograd Graph Preservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batching-and-neighbor-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batching and Neighbor Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batching and Neighbor Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dense-mode-on2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dense Mode (O(N²))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sparse-mode-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sparse Mode (O(N))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mode-2-batched-sparse-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode 2: Batched Sparse (manual)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-right-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing the Right Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flattening-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flattening Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#periodic-boundary-conditions-pbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic Boundary Conditions (PBC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Periodic Boundary Conditions (PBC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-method-for-pbc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Method for PBC
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neighbor-list-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbor List Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Neighbor List Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adaptive-neighbor-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptive Neighbor Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neighbor-list-format-and-padding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbor List Format and Padding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-suffix-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Suffix Fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#device-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Device Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Placement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-lr-module-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External LR Module Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External LR Module Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lrcoulomb-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LRCoulomb Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dftd3-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DFTD3 Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-lr-modules-are-attached" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How LR Modules Are Attached
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutoff-handling-for-lr-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cutoff Handling for LR Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Values
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Default Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lr-module-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LR Module Defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Defaults
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coulomb Defaults">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sr-coulomb-cutoff-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SR Coulomb Cutoff Constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-model-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy Model Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Warnings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardware-acceleration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Acceleration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-compute-neighbor-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-compute Neighbor Lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coulomb-method-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coulomb Method Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-threading-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-threading (CPU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="aimnet2calculator">AIMNet2Calculator<a class="headerlink" href="#aimnet2calculator" title="Permanent link">&para;</a></h1>
+<p>This document provides detailed documentation of the <code>AIMNet2Calculator</code> class behavior.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p><code>AIMNet2Calculator</code> is a helper class for loading AIMNet2 models and performing inference. It handles:</p>
+<ul>
+<li>Model loading (from registry, file path, or <code>nn.Module</code>)</li>
+<li>External long-range (LR) module setup (Coulomb, DFTD3)</li>
+<li>Neighbor list computation and management</li>
+<li>Input preprocessing and output postprocessing</li>
+<li>Batching and periodic boundary conditions (PBC)</li>
+</ul>
+<p>For LR module math and behavior, see <a href="../long_range/">long_range.md</a>.</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="basic-inference">Basic Inference<a class="headerlink" href="#basic-inference" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">aimnet.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIMNet2Calculator</span>
+
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="p">({</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>    <span class="c1"># (N, 3)</span>
+    <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span> <span class="c1"># (N,)</span>
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="with-forces">With Forces<a class="headerlink" href="#with-forces" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">forces</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span>  <span class="c1"># (N, 3)</span>
+</code></pre></div>
+<h3 id="periodic-systems">Periodic Systems<a class="headerlink" href="#periodic-systems" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;dsf&quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="p">({</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
+    <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span>
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="n">cell</span><span class="p">,</span>  <span class="c1"># (3, 3)</span>
+<span class="p">},</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="changing-coulomb-methods">Changing Coulomb Methods<a class="headerlink" href="#changing-coulomb-methods" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># DSF (recommended for PBC)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;dsf&quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">dsf_alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="c1"># Ewald (high accuracy, currently limited to non-batched case)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;ewald&quot;</span><span class="p">,</span> <span class="n">ewald_accuracy</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+
+<span class="c1"># Simple (all pairs)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">AIMNet2Calculator</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span> <span class="o">=</span> <span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span>
+    <span class="n">nb_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">120</span><span class="p">,</span>
+    <span class="n">needs_coulomb</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">needs_dispersion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">compile_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">compile_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">train</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">ensemble_member</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">revision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<h4 id="model"><code>model</code><a class="headerlink" href="#model" title="Permanent link">&para;</a></h4>
+<p>Model to use for inference.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>str</code> (registry name)</td>
+<td>Loads from model registry (e.g., <code>"aimnet2"</code>), downloading if needed</td>
+</tr>
+<tr>
+<td><code>str</code> (file path)</td>
+<td>Loads from <code>.pt</code> (v2) or <code>.jpt</code> (v1 legacy) file if the path exists</td>
+</tr>
+<tr>
+<td><code>str</code> (HF repo ID)</td>
+<td>Loads from Hugging Face Hub (e.g., <code>"isayevlab/aimnet2-wb97m-d3"</code>); requires <code>aimnet[hf]</code></td>
+</tr>
+<tr>
+<td><code>str</code> (local HF dir)</td>
+<td>Loads from a local directory with <code>config.json</code> + <code>ensemble_N.safetensors</code></td>
+</tr>
+<tr>
+<td><code>torch.nn.Module</code></td>
+<td>Uses provided module directly</td>
+</tr>
+</tbody>
+</table>
+<p>For <code>torch.nn.Module</code>, metadata is read from <code>model.metadata</code> attribute if available (v2 models).</p>
+<h4 id="nb_threshold"><code>nb_threshold</code><a class="headerlink" href="#nb_threshold" title="Permanent link">&para;</a></h4>
+<p>Threshold for batching/flattening decisions. Default: <code>120</code>.</p>
+<p>The calculator uses two input modes:</p>
+<ol>
+<li><strong>Fully connected (mode 0)</strong>: 3D batched input for coordinates <code>(num_mols, num_atoms, 3)</code> with all-pairs interactions (dense O(N²)). Fast on GPU for small systems.</li>
+<li><strong>Flattened + neighbor lists (mode 1)</strong>: 2D input for coordinates <code>(num_atoms, 3)</code> with <code>mol_idx</code> and neighbor lists (sparse O(N)). Used for large systems, CPU execution, and periodic systems.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Behavior</th>
+<th>Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N &gt; nb_threshold</code></td>
+<td>If input is mode 0 (3D), flatten to mode 1 (2D with <code>mol_idx</code>)</td>
+<td>O(N) linear</td>
+</tr>
+<tr>
+<td><code>device == "cpu"</code></td>
+<td>If input is mode 0 (3D), always flatten to mode 1</td>
+<td>O(N) linear</td>
+</tr>
+<tr>
+<td><code>N &lt; nb_threshold</code> and CUDA</td>
+<td>Keep mode 0 (3D)</td>
+<td>O(N²) fully connected</td>
+</tr>
+</tbody>
+</table>
+<p>This affects memory usage and performance for batched inference. The mode=0 path uses a fully connected graph (all-pairs interactions), which scales as O(N²) but is fast for GPU. The mode=1 path uses neighbor lists, which scale linearly with system size. Fully connected mode is not used for periodic systems; PBC inputs always go through neighbor lists.</p>
+<h4 id="needs_coulomb"><code>needs_coulomb</code><a class="headerlink" href="#needs_coulomb" title="Permanent link">&para;</a></h4>
+<p>Whether to attach external Coulomb module.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None</code> (default)</td>
+<td>Determined from model metadata</td>
+</tr>
+<tr>
+<td><code>True</code></td>
+<td>Force external Coulomb (overrides metadata)</td>
+</tr>
+<tr>
+<td><code>False</code></td>
+<td>No external Coulomb (overrides metadata)</td>
+</tr>
+</tbody>
+</table>
+<p>Only affects v2 format models. Legacy JIT models have embedded Coulomb. If you override this flag on a model without Coulomb metadata, ensure it is compatible with the expected subtraction for short range Coulomb contribution (see <code>coulomb_mode</code> in model metadata).</p>
+<h4 id="needs_dispersion"><code>needs_dispersion</code><a class="headerlink" href="#needs_dispersion" title="Permanent link">&para;</a></h4>
+<p>Whether to attach external DFTD3 module.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None</code> (default)</td>
+<td>Determined from model metadata</td>
+</tr>
+<tr>
+<td><code>True</code></td>
+<td>Force external DFTD3 (overrides metadata)</td>
+</tr>
+<tr>
+<td><code>False</code></td>
+<td>No external DFTD3 (overrides metadata)</td>
+</tr>
+</tbody>
+</table>
+<p>Only affects new-format models. Raises <code>ValueError</code> if <code>needs_dispersion=True</code> but <code>d3_params</code> are missing in metadata.</p>
+<h4 id="device"><code>device</code><a class="headerlink" href="#device" title="Permanent link">&para;</a></h4>
+<p>Device to run the model on.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None</code> (default)</td>
+<td>Auto-detect: uses CUDA if available, else CPU</td>
+</tr>
+<tr>
+<td><code>"cuda"</code></td>
+<td>Force CUDA device</td>
+</tr>
+<tr>
+<td><code>"cpu"</code></td>
+<td>Force CPU device</td>
+</tr>
+<tr>
+<td><code>"cuda:N"</code></td>
+<td>Specific CUDA device (e.g., <code>"cuda:1"</code>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="compile_model"><code>compile_model</code><a class="headerlink" href="#compile_model" title="Permanent link">&para;</a></h4>
+<p>Whether to compile the model with <code>torch.compile()</code> for faster inference.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>False</code> (default)</td>
+<td>No compilation</td>
+</tr>
+<tr>
+<td><code>True</code></td>
+<td>Compile model with <code>torch.compile()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Compilation adds overhead on first call but speeds up subsequent calls. Useful for MD trajectories, geometry optimizations, or repeated evaluations.</p>
+<h4 id="compile_kwargs"><code>compile_kwargs</code><a class="headerlink" href="#compile_kwargs" title="Permanent link">&para;</a></h4>
+<p>Additional keyword arguments to pass to <code>torch.compile()</code>. Default is <code>None</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Example: use reduce-overhead mode for lower latency</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span> <span class="n">compile_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compile_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;reduce-overhead&quot;</span><span class="p">})</span>
+</code></pre></div>
+<p>See <a href="https://pytorch.org/docs/stable/generated/torch.compile.html">torch.compile documentation</a> for available options.</p>
+<h4 id="train"><code>train</code><a class="headerlink" href="#train" title="Permanent link">&para;</a></h4>
+<p>Whether to put the model in training mode. Default: <code>False</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>False</code> (default)</td>
+<td>Inference mode: model set to <code>.eval()</code>, all parameters set to <code>requires_grad_(False)</code></td>
+</tr>
+<tr>
+<td><code>True</code></td>
+<td>Training mode: model set to <code>.train()</code>, parameters keep <code>requires_grad</code></td>
+</tr>
+</tbody>
+</table>
+<p>For ordinary energy/force/charge inference (including external autograd through the calculator), leave this <code>False</code>. Set <code>True</code> only when using the calculator inside a training loop where model parameters need gradients.</p>
+<h4 id="ensemble_member"><code>ensemble_member</code><a class="headerlink" href="#ensemble_member" title="Permanent link">&para;</a></h4>
+<p>Which ensemble member to load when loading from a Hugging Face repo. Default: <code>0</code>.</p>
+<p>Ensemble members are indexed 0–3. Only applies when <code>model</code> is a HF repo ID or a local HF-style directory (containing <code>config.json</code> + <code>ensemble_N.safetensors</code>).</p>
+<h4 id="revision"><code>revision</code><a class="headerlink" href="#revision" title="Permanent link">&para;</a></h4>
+<p>HF repo revision (branch, tag, or commit hash) to load from. Default: <code>None</code> (latest).</p>
+<p>Only applies when <code>model</code> is a HF repo ID.</p>
+<h4 id="token"><code>token</code><a class="headerlink" href="#token" title="Permanent link">&para;</a></h4>
+<p>HF API token for accessing private or gated repositories. Default: <code>None</code>.</p>
+<p>Set via environment variable <code>HF_TOKEN</code> as an alternative to passing it directly.</p>
+<p>Only applies when <code>model</code> is a HF repo ID.</p>
+<h3 id="metadata-resolution">Metadata Resolution<a class="headerlink" href="#metadata-resolution" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>Priority: explicit flags &gt; model metadata &gt; no external modules
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Model Source</th>
+<th>Metadata Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File path (<code>.pt</code>/<code>.jpt</code>)</td>
+<td>Loaded from file</td>
+</tr>
+<tr>
+<td><code>nn.Module</code></td>
+<td><code>model.metadata</code> attribute</td>
+</tr>
+<tr>
+<td>No metadata + no flags</td>
+<td>No external LR modules</td>
+</tr>
+</tbody>
+</table>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h2>
+<h3 id="device_1"><code>device</code><a class="headerlink" href="#device_1" title="Permanent link">&para;</a></h3>
+<p>Device string (e.g., <code>"cuda"</code>, <code>"cpu"</code>, <code>"cuda:1"</code>). Set via constructor parameter or auto-detected.</p>
+<h3 id="cutoff"><code>cutoff</code><a class="headerlink" href="#cutoff" title="Permanent link">&para;</a></h3>
+<p>Short-range model cutoff in Angstroms. Typically 5.0 Å.</p>
+<h3 id="cutoff_lr"><code>cutoff_lr</code><a class="headerlink" href="#cutoff_lr" title="Permanent link">&para;</a></h3>
+<p>Primary long-range cutoff reference. Used for backward compatibility with legacy models.</p>
+<h3 id="coulomb_cutoff"><code>coulomb_cutoff</code><a class="headerlink" href="#coulomb_cutoff" title="Permanent link">&para;</a></h3>
+<p>Coulomb-specific cutoff distance. Tracked separately from the DFTD3 cutoff.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"simple"</code></td>
+<td><code>inf</code> (all pairs)</td>
+</tr>
+<tr>
+<td><code>"dsf"</code></td>
+<td>Configured cutoff (default 15.0 Å)</td>
+</tr>
+<tr>
+<td><code>"ewald"</code></td>
+<td><code>None</code> (Ewald manages its own real-space cutoff internally)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dftd3_cutoff"><code>dftd3_cutoff</code><a class="headerlink" href="#dftd3_cutoff" title="Permanent link">&para;</a></h3>
+<p>DFTD3-specific cutoff distance. Default: 15.0 Å.</p>
+<p><strong>Neighbor list behavior:</strong></p>
+<p>The calculator keeps Coulomb and DFTD3 cutoffs independent. Long-range neighbor lists are:</p>
+<ul>
+<li><strong>Shared</strong> when both cutoffs are finite and within 20% of each other</li>
+<li><strong>Separate</strong> when both cutoffs are finite and differ by more than 20%</li>
+<li><strong>All pairs</strong> for <code>"simple"</code> Coulomb (effectively no cutoff)</li>
+<li><strong>Ignored by Ewald</strong>, which builds its own real-space/reciprocal sums</li>
+</ul>
+<p><strong>Data dictionary keys:</strong></p>
+<p>LR modules prefer their specific suffix, falling back to <code>_lr</code>:</p>
+<ul>
+<li><strong>LRCoulomb</strong>: Tries <code>nbmat_coulomb</code> first, falls back to <code>nbmat_lr</code></li>
+<li><strong>DFTD3/D3TS</strong>: Tries <code>nbmat_dftd3</code> first, falls back to <code>nbmat_lr</code></li>
+</ul>
+<p>When neighbor lists are shared, all keys point to the same array.</p>
+<p><strong>Modifying cutoffs:</strong></p>
+<ul>
+<li><code>set_lr_cutoff(cutoff)</code>: Updates both Coulomb and DFTD3 cutoffs</li>
+<li><code>set_lrcoulomb_method(method, cutoff)</code>: Updates Coulomb cutoff only</li>
+<li><code>set_dftd3_cutoff(cutoff)</code>: Updates DFTD3 cutoff only</li>
+</ul>
+<h3 id="has_external_coulomb"><code>has_external_coulomb</code><a class="headerlink" href="#has_external_coulomb" title="Permanent link">&para;</a></h3>
+<p><code>True</code> if external <code>LRCoulomb</code> module is attached. <code>False</code> for legacy models with embedded Coulomb.</p>
+<h3 id="has_external_dftd3"><code>has_external_dftd3</code><a class="headerlink" href="#has_external_dftd3" title="Permanent link">&para;</a></h3>
+<p><code>True</code> if external <code>DFTD3</code> module is attached. <code>False</code> for legacy models or D3TS models.</p>
+<h3 id="coulomb_method"><code>coulomb_method</code><a class="headerlink" href="#coulomb_method" title="Permanent link">&para;</a></h3>
+<p>Current Coulomb method: <code>"simple"</code>, <code>"dsf"</code>, <code>"ewald"</code>, or <code>None</code>.</p>
+<p>Returns <code>None</code> for:</p>
+<ul>
+<li>Legacy models with embedded Coulomb</li>
+<li>Models without Coulomb</li>
+</ul>
+<p><strong>Note on Ewald:</strong></p>
+<p>Ewald summation uses its own internal real-space cutoff based on accuracy requirements. When Ewald is selected, <code>coulomb_cutoff</code> is <code>None</code> and does not contribute to neighbor list computation.</p>
+<h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
+<h3 id="evaldata-forcesfalse-stressfalse-hessianfalse"><code>eval(data, forces=False, stress=False, hessian=False)</code><a class="headerlink" href="#evaldata-forcesfalse-stressfalse-hessianfalse" title="Permanent link">&para;</a></h3>
+<p>Main inference method. Also callable via <code>calculator(data, ...)</code>.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td><code>dict</code></td>
+<td>required</td>
+<td>Input data dictionary</td>
+</tr>
+<tr>
+<td><code>forces</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Compute atomic forces</td>
+</tr>
+<tr>
+<td><code>stress</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Compute stress tensor (requires <code>cell</code>)</td>
+</tr>
+<tr>
+<td><code>hessian</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Compute Hessian matrix</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> Dictionary with computed outputs.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="o">.</span><span class="n">eval</span><span class="p">({</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>      <span class="c1"># (N, 3) or (B, N, 3)</span>
+    <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span>   <span class="c1"># (N,) or (B, N)</span>
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="n">charge</span><span class="p">,</span>     <span class="c1"># (1,) or (B,)</span>
+<span class="p">},</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">energy</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+<span class="n">forces</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span>
+<span class="n">charges</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;charges&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="set_lrcoulomb_methodmethod-cutoff150-dsf_alpha02-ewald_accuracy1e-8"><code>set_lrcoulomb_method(method, cutoff=15.0, dsf_alpha=0.2, ewald_accuracy=1e-8)</code><a class="headerlink" href="#set_lrcoulomb_methodmethod-cutoff150-dsf_alpha02-ewald_accuracy1e-8" title="Permanent link">&para;</a></h3>
+<p>Set the long-range Coulomb method.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>method</code></td>
+<td><code>str</code></td>
+<td>required</td>
+<td><code>"simple"</code>, <code>"dsf"</code>, or <code>"ewald"</code></td>
+</tr>
+<tr>
+<td><code>cutoff</code></td>
+<td><code>float</code></td>
+<td><code>15.0</code></td>
+<td>Cutoff for DSF method (Å). Not used for Ewald.</td>
+</tr>
+<tr>
+<td><code>dsf_alpha</code></td>
+<td><code>float</code></td>
+<td><code>0.2</code></td>
+<td>Alpha parameter for DSF method</td>
+</tr>
+<tr>
+<td><code>ewald_accuracy</code></td>
+<td><code>float</code></td>
+<td><code>1e-8</code></td>
+<td>Target accuracy for Ewald summation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<th>Coulomb cutoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"simple"</code></td>
+<td>Direct Coulomb sum (all pairs)</td>
+<td><code>inf</code></td>
+</tr>
+<tr>
+<td><code>"dsf"</code></td>
+<td>Damped shifted force</td>
+<td>Configured cutoff</td>
+</tr>
+<tr>
+<td><code>"ewald"</code></td>
+<td>Ewald summation</td>
+<td>Computed from accuracy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ewald Accuracy Parameter:</strong></p>
+<p>For Ewald summation, the <code>ewald_accuracy</code> parameter controls the real-space and reciprocal-space cutoffs. The cutoffs are computed automatically based on system geometry:</p>
+<div class="arithmatex">\[ \eta = \frac{(V^2 / N)^{1/6}}{\sqrt{2\pi}} \]</div>
+<div class="arithmatex">\[ r\_{\text{cutoff}} = \sqrt{-2 \ln \varepsilon} \cdot \eta \]</div>
+<div class="arithmatex">\[ k\_{\text{cutoff}} = \frac{\sqrt{-2 \ln \varepsilon}}{\eta} \]</div>
+<p>Where <span class="arithmatex">\(\varepsilon\)</span> is the accuracy parameter, <span class="arithmatex">\(V\)</span> is the cell volume, and <span class="arithmatex">\(N\)</span> is the number of atoms. Lower accuracy values (e.g., <code>1e-10</code>) give higher precision but require more computation.</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Updates external <code>LRCoulomb</code> module if present</li>
+<li>Automatically updates neighbor lists</li>
+<li>Issues warning for legacy models (no effect)</li>
+<li>Auto-switches to <code>"dsf"</code> when PBC is detected with <code>"simple"</code> method (see PBC notes below)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;dsf&quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">12.0</span><span class="p">,</span> <span class="n">dsf_alpha</span><span class="o">=</span><span class="mf">0.20</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;ewald&quot;</span><span class="p">,</span> <span class="n">ewald_accuracy</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="set_lr_cutoffcutoff"><code>set_lr_cutoff(cutoff)</code><a class="headerlink" href="#set_lr_cutoffcutoff" title="Permanent link">&para;</a></h3>
+<p>Set the unified long-range cutoff for all LR modules.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cutoff</code></td>
+<td><code>float</code></td>
+<td>Cutoff distance (Å) for LR neighbor lists</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Updates both Coulomb and DFTD3 cutoffs</li>
+<li>Ewald method ignores this cutoff (uses its own internal cutoff)</li>
+<li>Automatically rebuilds neighbor lists</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lr_cutoff</span><span class="p">(</span><span class="mf">20.0</span><span class="p">)</span>  <span class="c1"># Updates both Coulomb and DFTD3 cutoffs</span>
+</code></pre></div>
+<h3 id="set_dftd3_cutoffcutoffnone-smoothing_fractionnone"><code>set_dftd3_cutoff(cutoff=None, smoothing_fraction=None)</code><a class="headerlink" href="#set_dftd3_cutoffcutoffnone-smoothing_fractionnone" title="Permanent link">&para;</a></h3>
+<p>Set DFTD3 cutoff and smoothing.</p>
+<p><strong>Parameters:</strong></p>
+<p>| Parameter            | Type   | Default | Description |
+| -------------------- | ------ | ------- | ----------- | ------------------------------------------ |
+| <code>cutoff</code>             | <code>float | None</code>   | <code>15.0</code>      | Cutoff distance (Å)                        |
+| <code>smoothing_fraction</code> | <code>float | None</code>   | <code>0.2</code>       | Fraction of cutoff used as smoothing width |</p>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Only updates smoothing parameters for external DFTD3 modules</li>
+<li>Always updates neighbor list cutoffs used by the calculator</li>
+<li>For legacy models with embedded DFTD3, the embedded module’s smoothing parameters do not change, but the neighbor list cutoff provided by the calculator can still change dispersion behavior</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_dftd3_cutoff</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">smoothing_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>  <span class="c1"># smoothing from 15A to 20A</span>
+</code></pre></div>
+<h2 id="input-format">Input Format<a class="headerlink" href="#input-format" title="Permanent link">&para;</a></h2>
+<h3 id="required-keys">Required Keys<a class="headerlink" href="#required-keys" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Shape</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>coord</code></td>
+<td><code>float32</code></td>
+<td><code>(N, 3)</code> or <code>(B, N, 3)</code></td>
+<td>Atomic coordinates (Å)</td>
+</tr>
+<tr>
+<td><code>numbers</code></td>
+<td><code>int64</code></td>
+<td><code>(N,)</code> or <code>(B, N)</code></td>
+<td>Atomic numbers</td>
+</tr>
+<tr>
+<td><code>charge</code></td>
+<td><code>float32</code></td>
+<td><code>(1,)</code> or <code>(B,)</code></td>
+<td>Molecular charge(s)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-keys">Optional Keys<a class="headerlink" href="#optional-keys" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Shape</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mult</code></td>
+<td><code>float32</code></td>
+<td><code>(B,)</code></td>
+<td>Multiplicity</td>
+</tr>
+<tr>
+<td><code>mol_idx</code></td>
+<td><code>int64</code></td>
+<td><code>(N,)</code></td>
+<td>Molecule index per atom</td>
+</tr>
+<tr>
+<td><code>cell</code></td>
+<td><code>float32</code></td>
+<td><code>(3, 3)</code> or <code>(B, 3, 3)</code></td>
+<td>Unit cell vectors</td>
+</tr>
+<tr>
+<td><code>nbmat</code></td>
+<td><code>int64</code></td>
+<td><code>(N, max_nb)</code></td>
+<td>Pre-computed neighbor matrix</td>
+</tr>
+<tr>
+<td><code>nbmat_lr</code></td>
+<td><code>int64</code></td>
+<td><code>(N, max_nb)</code></td>
+<td>Long-range neighbor matrix</td>
+</tr>
+<tr>
+<td><code>nb_pad_mask</code></td>
+<td><code>bool</code></td>
+<td><code>(N, max_nb)</code></td>
+<td>Optional padding mask for <code>nbmat</code></td>
+</tr>
+<tr>
+<td><code>nb_pad_mask_lr</code></td>
+<td><code>bool</code></td>
+<td><code>(N, max_nb)</code></td>
+<td>Optional padding mask for <code>nbmat_lr</code></td>
+</tr>
+<tr>
+<td><code>shifts</code></td>
+<td><code>float32</code></td>
+<td><code>(N, max_nb, 3)</code></td>
+<td>PBC shifts for neighbors</td>
+</tr>
+<tr>
+<td><code>shifts_lr</code></td>
+<td><code>float32</code></td>
+<td><code>(N, max_nb, 3)</code></td>
+<td>PBC shifts for LR neighbors</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-conversion">Input Conversion<a class="headerlink" href="#input-conversion" title="Permanent link">&para;</a></h3>
+<p>The calculator automatically converts:</p>
+<ul>
+<li>NumPy arrays → PyTorch tensors</li>
+<li>Python lists → PyTorch tensors</li>
+<li>Scalar tensors → Shape <code>(1,)</code></li>
+<li>All tensors → Correct dtype and device</li>
+</ul>
+<p>Any keys not listed in required/optional tables are ignored during input conversion.</p>
+<h3 id="autograd-graph-preservation">Autograd Graph Preservation<a class="headerlink" href="#autograd-graph-preservation" title="Permanent link">&para;</a></h3>
+<p>When <code>coord</code> is passed as a PyTorch tensor with <code>requires_grad=True</code>, the calculator preserves the full autograd graph from <code>coord</code> to the output energy. This allows external higher-order differentiation — for example, computing a Hessian via <code>torch.autograd.functional.hessian()</code> without using the built-in <code>hessian=True</code> flag:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aimnet.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIMNet2Calculator</span>
+
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="n">numbers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">charge</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+<span class="n">coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.76</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.47</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.76</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.47</span><span class="p">]])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">energy_fn</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">calc</span><span class="p">({</span><span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span> <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="n">charge</span><span class="p">},</span> <span class="n">forces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">energy_fn</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>  <span class="c1"># shape (N, 3, N, 3)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Use <code>forces=False</code> for external Hessians</p>
+<p>When computing higher-order derivatives from outside the calculator, pass <code>forces=False</code>. Requesting <code>forces=True</code> triggers an internal backward pass that frees intermediate activations, preventing a second differentiation through the graph.</p>
+</div>
+<p>When <code>coord</code> does <strong>not</strong> have <code>requires_grad=True</code> (the default), inputs are detached as before — optimization loops that call the calculator repeatedly incur no graph accumulation overhead.</p>
+<h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Shape</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>energy</code></td>
+<td><code>(1,)</code> or <code>(B,)</code></td>
+<td>Total energy per molecule</td>
+</tr>
+<tr>
+<td><code>charges</code></td>
+<td><code>(N,)</code> or <code>(B, N)</code></td>
+<td>Atomic partial charges</td>
+</tr>
+<tr>
+<td><code>forces</code></td>
+<td><code>(N, 3)</code> or <code>(B, N, 3)</code></td>
+<td>Atomic forces (if requested)</td>
+</tr>
+<tr>
+<td><code>stress</code></td>
+<td><code>(3, 3)</code> or <code>(B, 3, 3)</code></td>
+<td>Stress tensor (if requested)</td>
+</tr>
+<tr>
+<td><code>hessian</code></td>
+<td><code>(N, 3, N, 3)</code></td>
+<td>Hessian matrix (if requested)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><code>forces</code> requires <code>forces=True</code> in <code>eval()</code></li>
+<li><code>stress</code> requires <code>stress=True</code> and <code>cell</code> in input</li>
+<li><code>hessian</code> requires <code>hessian=True</code>, only for single molecules</li>
+</ul>
+<h2 id="batching-and-neighbor-modes">Batching and Neighbor Modes<a class="headerlink" href="#batching-and-neighbor-modes" title="Permanent link">&para;</a></h2>
+<p>The calculator chooses between dense and sparse execution based on system size and device. The goal is to keep small GPU workloads fast while keeping large or CPU workloads linear in memory.</p>
+<h3 id="dense-mode-on2">Dense Mode (O(N²))<a class="headerlink" href="#dense-mode-on2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>When</strong>: <code>N &lt; nb_threshold</code> <strong>and</strong> CUDA is available</li>
+<li><strong>Input</strong>: 3D batched <code>(B, N, 3)</code></li>
+<li><strong>Behavior</strong>: No neighbor list; the model uses a fully connected graph</li>
+<li><strong>Tradeoff</strong>: Fast on GPU for small molecules, but quadratic memory</li>
+</ul>
+<h3 id="sparse-mode-on">Sparse Mode (O(N))<a class="headerlink" href="#sparse-mode-on" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>When</strong>: <code>N &gt; nb_threshold</code> <strong>or</strong> CPU execution</li>
+<li><strong>Input</strong>: Flattened 2D <code>(N_total, 3)</code> with <code>mol_idx</code></li>
+<li><strong>Behavior</strong>: Adaptive neighbor lists limit interactions to within <code>cutoff</code></li>
+<li><strong>Tradeoff</strong>: Linear memory with a small overhead for neighbor list construction</li>
+</ul>
+<h3 id="mode-2-batched-sparse-manual">Mode 2: Batched Sparse (manual)<a class="headerlink" href="#mode-2-batched-sparse-manual" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Input</strong>: 3D batched <code>(B, N, 3)</code> plus 3D neighbor matrix <code>(B, N, max_nb)</code></li>
+<li><strong>Note</strong>: Supported by the model, but not selected automatically. Use this mode by supplying a 3D <code>nbmat</code> explicitly.</li>
+</ul>
+<h3 id="choosing-the-right-mode">Choosing the Right Mode<a class="headerlink" href="#choosing-the-right-mode" title="Permanent link">&para;</a></h3>
+<p>The calculator automatically selects between two execution modes:</p>
+<p><strong>Mode 0 (Dense, O(N²) fully connected):</strong> Every atom interacts with every other atom in an all-to-all manner. No neighbor list is constructed. This mode is only used for <strong>batches of small molecules with the same number of atoms on GPU</strong>. Specifically:</p>
+<ul>
+<li>Input must be 3D batched coordinates (B, N, 3)</li>
+<li>N ≤ nb_threshold (default 120 atoms per molecule)</li>
+<li>CUDA device available</li>
+<li>No periodic boundary conditions</li>
+</ul>
+<p>In this case, the O(N²) fully connected approach is more efficient than constructing neighbor lists.</p>
+<p><strong>Mode 1 (Sparse, O(N) with neighbor lists):</strong> Uses adaptive neighbor lists to limit interactions to atoms within cutoff distance. This mode is used in all other cases:</p>
+<ul>
+<li>Periodic boundary conditions (required for periodic images)</li>
+<li>CPU execution</li>
+<li>Large systems (N &gt; nb_threshold)</li>
+<li>Variable-sized molecules</li>
+</ul>
+<p><strong>Key Takeaways:</strong></p>
+<ul>
+<li>PBC always requires neighbor lists (Mode 1)</li>
+<li>CPU always uses neighbor lists (Mode 1)</li>
+<li>Small batched molecules on GPU use fully connected (Mode 0)</li>
+<li>Large systems use neighbor lists (Mode 1)</li>
+</ul>
+<h3 id="flattening-logic">Flattening Logic<a class="headerlink" href="#flattening-logic" title="Permanent link">&para;</a></h3>
+<p>For 3D batched inputs, <code>AIMNet2Calculator</code> decides whether to flatten based on <code>nb_threshold</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># nb_threshold default is 120</span>
+<span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span> <span class="ow">or</span> <span class="n">max_atoms</span> <span class="o">&gt;</span> <span class="n">nb_threshold</span><span class="p">:</span>
+    <span class="c1"># FLATTEN -&gt; Mode 1 (Sparse)</span>
+    <span class="c1"># Computes neighbor list</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># KEEP 3D -&gt; Mode 0 (Dense)</span>
+    <span class="c1"># Implicit all-pairs</span>
+</code></pre></div>
+<h2 id="periodic-boundary-conditions-pbc">Periodic Boundary Conditions (PBC)<a class="headerlink" href="#periodic-boundary-conditions-pbc" title="Permanent link">&para;</a></h2>
+<h3 id="input-requirements">Input Requirements<a class="headerlink" href="#input-requirements" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
+    <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span>
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="n">charge</span><span class="p">,</span>
+    <span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="n">cell</span><span class="p">,</span>  <span class="c1"># (3, 3) or (num_systems, 3, 3)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="behavior">Behavior<a class="headerlink" href="#behavior" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Coordinates wrapped into unit cell via <code>move_coord_to_cell()</code></li>
+<li>Neighbor lists include periodic image shifts</li>
+<li>Coulomb method auto-switches to <code>"dsf"</code> if <code>"simple"</code> (with warning). For legacy JIT models the embedded Coulomb method cannot be changed at runtime; the warning indicates that only the calculator’s external setting was updated.</li>
+<li>Multiple molecules with PBC: raises <code>NotImplementedError</code></li>
+</ol>
+<h3 id="coulomb-method-for-pbc">Coulomb Method for PBC<a class="headerlink" href="#coulomb-method-for-pbc" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Initial Method</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"simple"</code></td>
+<td>Auto-switch to <code>"dsf"</code> with warning</td>
+</tr>
+<tr>
+<td><code>"dsf"</code> / <code>"ewald"</code></td>
+<td>No change</td>
+</tr>
+</tbody>
+</table>
+<h2 id="neighbor-list-management">Neighbor List Management<a class="headerlink" href="#neighbor-list-management" title="Permanent link">&para;</a></h2>
+<h3 id="adaptive-neighbor-lists">Adaptive Neighbor Lists<a class="headerlink" href="#adaptive-neighbor-lists" title="Permanent link">&para;</a></h3>
+<p>The calculator uses <code>AdaptiveNeighborList</code> for automatic buffer management in <strong>Mode 1</strong>:</p>
+<ul>
+<li><strong>Initial sizing</strong>: Based on density estimate and cutoff</li>
+<li><strong>Overflow handling</strong>: Increases buffer by 1.5x and retries</li>
+<li><strong>Underutilization</strong>: Shrinks if utilization &lt; 2/3 of target (hysteresis)</li>
+<li><strong>Minimum buffer</strong>: 16 neighbors</li>
+<li><strong>Memory alignment</strong>: Rounded to multiples of 16</li>
+</ul>
+<h3 id="neighbor-list-format-and-padding">Neighbor List Format and Padding<a class="headerlink" href="#neighbor-list-format-and-padding" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Neighbor lists are stored as integer matrices <code>nbmat</code> with shape <code>(N_total, max_neighbors)</code>.</li>
+<li>Each row contains neighbor indices for a single atom.</li>
+<li>Rows are padded with a dummy index (typically <code>N_total</code>) when an atom has fewer neighbors than <code>max_neighbors</code>.</li>
+<li>The buffer grows on overflow (×1.5) and shrinks when utilization drops well below target, which helps performance remain stable as density changes.</li>
+</ul>
+<h3 id="module-suffix-fallback">Module Suffix Fallback<a class="headerlink" href="#module-suffix-fallback" title="Permanent link">&para;</a></h3>
+<p>LR modules prefer their specific neighbor list key, with fallback to <code>_lr</code>:</p>
+<ul>
+<li><strong>LRCoulomb (simple/dsf)</strong>: Tries <code>nbmat_coulomb</code>, falls back to <code>nbmat_lr</code></li>
+<li><strong>DFTD3/D3TS</strong>: Tries <code>nbmat_dftd3</code>, falls back to <code>nbmat_lr</code></li>
+</ul>
+<p><strong>Note:</strong> Ewald uses its own internal neighbor list and ignores calculator cutoffs.</p>
+<h2 id="device-handling">Device Handling<a class="headerlink" href="#device-handling" title="Permanent link">&para;</a></h2>
+<h3 id="automatic-selection">Automatic Selection<a class="headerlink" href="#automatic-selection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+</code></pre></div>
+<h3 id="placement">Placement<a class="headerlink" href="#placement" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Device</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td><code>self.device</code></td>
+</tr>
+<tr>
+<td>External LRCoulomb</td>
+<td><code>self.device</code></td>
+</tr>
+<tr>
+<td>External DFTD3</td>
+<td><code>self.device</code></td>
+</tr>
+<tr>
+<td>Input tensors</td>
+<td>Converted to <code>self.device</code></td>
+</tr>
+<tr>
+<td>Output tensors</td>
+<td>Remain on <code>self.device</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="external-lr-module-configuration">External LR Module Configuration<a class="headerlink" href="#external-lr-module-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="lrcoulomb-setup">LRCoulomb Setup<a class="headerlink" href="#lrcoulomb-setup" title="Permanent link">&para;</a></h3>
+<p>When <code>needs_coulomb=True</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">LRCoulomb</span><span class="p">(</span>
+    <span class="n">key_in</span><span class="o">=</span><span class="s2">&quot;charges&quot;</span><span class="p">,</span>
+    <span class="n">key_out</span><span class="o">=</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>  <span class="c1"># Default, changeable via set_lrcoulomb_method()</span>
+    <span class="n">rc</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;coulomb_sr_rc&quot;</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">),</span>
+    <span class="n">envelope</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;coulomb_sr_envelope&quot;</span><span class="p">,</span> <span class="s2">&quot;exp&quot;</span><span class="p">),</span>
+    <span class="n">subtract_sr</span><span class="o">=</span><span class="ow">not</span> <span class="n">sr_embedded</span><span class="p">,</span>  <span class="c1"># Based on coulomb_mode</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="dftd3-setup">DFTD3 Setup<a class="headerlink" href="#dftd3-setup" title="Permanent link">&para;</a></h3>
+<p>When <code>needs_dispersion=True</code> and <code>d3_params</code> available:</p>
+<div class="highlight"><pre><span></span><code><span class="n">DFTD3</span><span class="p">(</span>
+    <span class="n">s8</span><span class="o">=</span><span class="n">d3_params</span><span class="p">[</span><span class="s2">&quot;s8&quot;</span><span class="p">],</span>
+    <span class="n">a1</span><span class="o">=</span><span class="n">d3_params</span><span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">],</span>
+    <span class="n">a2</span><span class="o">=</span><span class="n">d3_params</span><span class="p">[</span><span class="s2">&quot;a2&quot;</span><span class="p">],</span>
+    <span class="n">s6</span><span class="o">=</span><span class="n">d3_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;s6&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="how-lr-modules-are-attached">How LR Modules Are Attached<a class="headerlink" href="#how-lr-modules-are-attached" title="Permanent link">&para;</a></h3>
+<p>External LR modules are attached based on model metadata unless overridden by constructor flags:</p>
+<ul>
+<li>If <code>needs_coulomb=True</code>, an external <code>LRCoulomb</code> is created. If <code>coulomb_mode="sr_embedded"</code>, the model already subtracts SR Coulomb internally and the external module adds full Coulomb on top.</li>
+<li>If <code>needs_dispersion=True</code> and <code>d3_params</code> are present, an external <code>DFTD3</code> is created. If <code>d3_params</code> are missing, initialization raises <code>ValueError</code>.</li>
+</ul>
+<p>Explicit <code>needs_coulomb</code> / <code>needs_dispersion</code> flags override metadata.</p>
+<h3 id="cutoff-handling-for-lr-modules">Cutoff Handling for LR Modules<a class="headerlink" href="#cutoff-handling-for-lr-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Coulomb</strong>: <code>set_lrcoulomb_method()</code> selects the method and updates the Coulomb cutoff (<code>inf</code> for <code>"simple"</code>, finite for <code>"dsf"</code>, <code>None</code> for <code>"ewald"</code>).</li>
+<li><strong>DFTD3</strong>: <code>set_dftd3_cutoff()</code> updates the DFTD3 cutoff and smoothing window.</li>
+<li><strong>Unified control</strong>: <code>set_lr_cutoff()</code> sets both Coulomb and DFTD3 cutoffs to the same value.</li>
+<li><strong>Ewald</strong>: Uses its own internal neighbor list; calculator cutoffs do not apply.</li>
+</ul>
+<h2 id="default-values">Default Values<a class="headerlink" href="#default-values" title="Permanent link">&para;</a></h2>
+<h3 id="lr-module-defaults">LR Module Defaults<a class="headerlink" href="#lr-module-defaults" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_lrcoulomb_method(..., cutoff=15.0)</code></td>
+<td><code>15.0</code></td>
+<td>Default LR cutoff for DSF (Å)</td>
+</tr>
+<tr>
+<td><code>set_lrcoulomb_method(..., ewald_accuracy=1e-8)</code></td>
+<td><code>1e-8</code></td>
+<td>Default accuracy for Ewald summation</td>
+</tr>
+<tr>
+<td><code>set_dftd3_cutoff(..., smoothing_fraction=0.2)</code></td>
+<td><code>0.2</code></td>
+<td>DFTD3 smoothing width as fraction of cutoff</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coulomb-defaults">Coulomb Defaults<a class="headerlink" href="#coulomb-defaults" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>coulomb_sr_rc</code></td>
+<td><code>4.6</code> Å</td>
+<td>Short-range Coulomb cutoff</td>
+</tr>
+<tr>
+<td><code>coulomb_sr_envelope</code></td>
+<td><code>"exp"</code></td>
+<td>Envelope function (<code>"exp"</code> or <code>"cosine"</code>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="sr-coulomb-cutoff-constraint">SR Coulomb Cutoff Constraint<a class="headerlink" href="#sr-coulomb-cutoff-constraint" title="Permanent link">&para;</a></h4>
+<p><strong><code>coulomb_sr_rc</code> must be ≤ model <code>cutoff</code></strong></p>
+<p>The short-range Coulomb cutoff defines the distance within which SR Coulomb interactions are computed by the embedded <code>SRCoulomb</code> module. This cutoff must be less than or equal to the model's short-range cutoff because:</p>
+<ul>
+<li>SRCoulomb uses the same neighbor list as the neural network</li>
+<li>Atom pairs beyond the model cutoff are not visible to SRCoulomb</li>
+<li>Typical configuration: <code>coulomb_sr_rc=4.6</code> Å with model <code>cutoff=5.0</code> Å</li>
+</ul>
+<p>The envelope function (<code>"exp"</code> or <code>"cosine"</code>) determines how the SR interaction smoothly decays to zero at the cutoff boundary.</p>
+<h2 id="legacy-model-compatibility">Legacy Model Compatibility<a class="headerlink" href="#legacy-model-compatibility" title="Permanent link">&para;</a></h2>
+<p>Legacy JIT models (<code>.jpt</code>) have different behavior:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Legacy</th>
+<th>New Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coulomb</td>
+<td>Embedded in model</td>
+<td>External module</td>
+</tr>
+<tr>
+<td>DFTD3/D3BJ</td>
+<td>Embedded in model</td>
+<td>External module</td>
+</tr>
+<tr>
+<td><code>set_lrcoulomb_method()</code></td>
+<td>Warning, no effect</td>
+<td>Updates method</td>
+</tr>
+<tr>
+<td><code>set_lr_cutoff()</code></td>
+<td>No effect on embedded modules</td>
+<td>Updates <code>cutoff_lr</code> for all LR modules</td>
+</tr>
+<tr>
+<td><code>set_dftd3_cutoff()</code></td>
+<td>No effect on embedded modules</td>
+<td>Updates smoothing for external DFTD3</td>
+</tr>
+<tr>
+<td><code>has_external_coulomb</code></td>
+<td><code>False</code></td>
+<td><code>True</code> (if applicable)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<h3 id="common-errors">Common Errors<a class="headerlink" href="#common-errors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid model type</td>
+<td><code>TypeError</code></td>
+</tr>
+<tr>
+<td>Missing required input key</td>
+<td><code>KeyError</code></td>
+</tr>
+<tr>
+<td>Hessian with multiple molecules</td>
+<td><code>NotImplementedError</code></td>
+</tr>
+<tr>
+<td>PBC with multiple molecules</td>
+<td><code>NotImplementedError</code></td>
+</tr>
+<tr>
+<td>Invalid Coulomb method</td>
+<td><code>ValueError</code></td>
+</tr>
+<tr>
+<td><code>needs_dispersion=True</code> without <code>d3_params</code></td>
+<td><code>ValueError</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="warnings">Warnings<a class="headerlink" href="#warnings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Warning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_lrcoulomb_method()</code> on legacy model</td>
+<td>Warns, no effect</td>
+</tr>
+<tr>
+<td>PBC with <code>"simple"</code> Coulomb</td>
+<td>Auto-switches to <code>"dsf"</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">aimnet.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIMNet2Calculator</span>
+
+<span class="c1"># Create calculator</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check configuration</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device: </span><span class="si">{</span><span class="n">calc</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutoff: </span><span class="si">{</span><span class="n">calc</span><span class="o">.</span><span class="n">cutoff</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Has external Coulomb: </span><span class="si">{</span><span class="n">calc</span><span class="o">.</span><span class="n">has_external_coulomb</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coulomb method: </span><span class="si">{</span><span class="n">calc</span><span class="o">.</span><span class="n">coulomb_method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure for PBC</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;dsf&quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">12.0</span><span class="p">)</span>
+
+<span class="c1"># Prepare input</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,)),</span>
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span>
+<span class="p">}</span>
+
+<span class="c1"># Run inference</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Energy: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forces shape: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;forces&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charges shape: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<h3 id="hardware-acceleration">Hardware Acceleration<a class="headerlink" href="#hardware-acceleration" title="Permanent link">&para;</a></h3>
+<p><strong>Use GPU for best performance:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Automatically uses CUDA if available</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">calc</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># &quot;cuda&quot; or &quot;cpu&quot;</span>
+</code></pre></div>
+<p>GPU provides 10-50x speedup over CPU for typical workloads.</p>
+<h3 id="compile-mode">Compile Mode<a class="headerlink" href="#compile-mode" title="Permanent link">&para;</a></h3>
+<p><strong>Use <code>compile_model=True</code> for additional speedup:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Basic compilation</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span> <span class="n">compile_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># With custom compile options</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span>
+    <span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span>
+    <span class="n">compile_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">compile_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;reduce-overhead&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>First call will be slow (compilation overhead)</li>
+<li>Subsequent calls are faster</li>
+<li>Works with both periodic and non-periodic systems</li>
+</ul>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Long MD trajectories</li>
+<li>Geometry optimization with many steps</li>
+<li>Repeated evaluation on same system size</li>
+</ul>
+<p><strong>When not to use:</strong></p>
+<ul>
+<li>Single evaluations (compilation overhead outweighs benefit)</li>
+<li>Varying system sizes (may trigger recompilation)</li>
+</ul>
+<h3 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h3>
+<p><strong>Tune <code>nb_threshold</code> for your workload:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Conservative (less memory, earlier sparse mode)</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span> <span class="n">nb_threshold</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="c1"># Aggressive (more memory, faster on GPU)</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">,</span> <span class="n">nb_threshold</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>For large systems on GPU:</strong></p>
+<ul>
+<li>Lower <code>nb_threshold</code> to use sparse mode</li>
+<li>Reduces memory footprint</li>
+<li>Enables processing larger molecules</li>
+</ul>
+<p><strong>For many small molecules:</strong></p>
+<ul>
+<li>Higher <code>nb_threshold</code> to use dense mode longer</li>
+<li>Maximizes GPU parallelism</li>
+<li>Faster overall throughput</li>
+</ul>
+<h3 id="pre-compute-neighbor-lists">Pre-compute Neighbor Lists<a class="headerlink" href="#pre-compute-neighbor-lists" title="Permanent link">&para;</a></h3>
+<p><strong>Avoid recomputation by caching:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># First call: computes neighbor lists</span>
+<span class="n">result1</span> <span class="o">=</span> <span class="n">calc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># If geometry unchanged, reuse same data dict</span>
+<span class="c1"># Calculator caches neighbor lists internally</span>
+<span class="n">result2</span> <span class="o">=</span> <span class="n">calc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Reuses cached lists</span>
+</code></pre></div>
+<p><strong>For custom workflows, provide nbmat explicitly:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Compute once</span>
+<span class="n">nbmat</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">shifts</span> <span class="o">=</span> <span class="n">compute_neighbor_list</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+
+<span class="c1"># Use many times</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">calc</span><span class="p">({</span>
+        <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
+        <span class="s2">&quot;numbers&quot;</span><span class="p">:</span> <span class="n">numbers</span><span class="p">,</span>
+        <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;nbmat&quot;</span><span class="p">:</span> <span class="n">nbmat</span><span class="p">,</span>
+        <span class="s2">&quot;shifts&quot;</span><span class="p">:</span> <span class="n">shifts</span><span class="p">,</span>
+    <span class="p">},</span> <span class="n">forces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="coulomb-method-selection">Coulomb Method Selection<a class="headerlink" href="#coulomb-method-selection" title="Permanent link">&para;</a></h3>
+<p><strong>Choose method for your system:</strong></p>
+<table>
+<thead>
+<tr>
+<th>System Type</th>
+<th>Method</th>
+<th>Parameter</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small non-PBC</td>
+<td><code>"simple"</code></td>
+<td>N/A</td>
+<td>All pairs, exact</td>
+</tr>
+<tr>
+<td>Large non-PBC</td>
+<td><code>"dsf"</code></td>
+<td>cutoff=12-15 Å</td>
+<td>O(N) scaling</td>
+</tr>
+<tr>
+<td>PBC systems</td>
+<td><code>"dsf"</code></td>
+<td>cutoff=12-15 Å</td>
+<td>Recommended</td>
+</tr>
+<tr>
+<td>High-accuracy PBC</td>
+<td><code>"ewald"</code></td>
+<td>accuracy=1e-8</td>
+<td>Research-grade</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Fast for non-PBC</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">)</span>
+
+<span class="c1"># Efficient for PBC</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;dsf&quot;</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span>
+
+<span class="c1"># High-accuracy for research</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">set_lrcoulomb_method</span><span class="p">(</span><span class="s2">&quot;ewald&quot;</span><span class="p">,</span> <span class="n">ewald_accuracy</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="multi-threading-cpu">Multi-threading (CPU)<a class="headerlink" href="#multi-threading-cpu" title="Permanent link">&para;</a></h3>
+<p><strong>Set thread count for CPU execution:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># Use 4 CPU cores</span>
+
+<span class="n">calc</span> <span class="o">=</span> <span class="n">AIMNet2Calculator</span><span class="p">(</span><span class="s2">&quot;aimnet2&quot;</span><span class="p">)</span>  <span class="c1"># Will use CPU</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
