@@ -9,7 +9,7 @@ authors = [
 ]
 description = "AIMNet Machine Learned Interatomic Potential"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 license = { file = "LICENSE" }
 keywords = [
     "machine learning",
@@ -39,7 +39,7 @@ dependencies = [
     "nvalchemi-toolkit-ops>=0.3.1",
     "requests>=2.32.3",
     "click>=8.1.7",
-    "pyyaml>=6.0.2",
+    "pyyaml>=5.4",
     "jinja2>=3.1.6",
     "h5py>=3.12.1",
 ]
@@ -61,7 +61,7 @@ sella = [
     "sella>=2.4.0",
 ]
 
-# TorchSim calculator integration
+# TorchSim calculator integration (incompatible with [tt]; see [tool.uv.conflicts])
 torchsim = [
     "torch-sim-atomistic>=0.6.0,<0.7.0; python_version >= '3.12'",
 ]
@@ -77,6 +77,10 @@ train = [
 hf = [
     "huggingface_hub>=0.20",
     "safetensors>=0.4",
+]
+# Tenstorrent tt-lang integration (incompatible with [torchsim]; see [tool.uv.conflicts])
+tt = [
+    "tt-lang[device]>=1.1.1",
 ]
 
 [project.scripts]
@@ -113,10 +117,18 @@ include = [
 # UV configuration
 [tool.uv]
 managed = true
+conflicts = [
+    [
+        { extra = "tt" },
+        { extra = "torchsim" },
+    ],
+]
 
 # Dependency groups for development (uv-style)
 [dependency-groups]
 dev = [
+    "matplotlib>=3.8",
+    "scienceplots>=2.1.0",
     "pre-commit",
     "pytest>=7.2.0",
     "pytest-cov>=4.0.0",
@@ -217,6 +229,8 @@ markers = [
     "slow: marks tests that are intentionally expensive (deselect with: -m 'not slow')",
     "torch_sim: marks tests that require TorchSim (deselect with: -m 'not torch_sim')",
     "train: marks tests that require training dependencies (deselect with: -m 'not train')",
+    "tt: marks tests that require tt-lang (deselect with: -m 'not tt')",
+    "tt_hw: marks tests that require local Tenstorrent hardware (deselect with: -m 'not tt_hw')",
 ]
 
 # Coverage configuration

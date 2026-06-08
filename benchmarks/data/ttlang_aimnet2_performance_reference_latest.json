@@ -1,0 +1,142 @@
+{
+  "schema": "aimnet.ttlang_performance.v1",
+  "timestamp": "2026-06-08T17:10:48.763079Z",
+  "mode": "reference",
+  "warmup": 1,
+  "repeats": 1,
+  "systems": [
+    {
+      "name": "water",
+      "n_atoms": 3,
+      "energy_ref_eV": -2075.067630796752,
+      "energy_tt_eV": -2075.067630796752,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 1.217744022142142,
+        "std_ms": 0.0,
+        "median_ms": 1.217744022142142,
+        "samples_ms": [
+          1.217744022142142
+        ]
+      },
+      "throughput_atoms_per_s": 2463.5719374936275
+    },
+    {
+      "name": "methane",
+      "n_atoms": 5,
+      "energy_ref_eV": -1101.9311269882007,
+      "energy_tt_eV": -1101.9311269882007,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 1.5110049862414598,
+        "std_ms": 0.0,
+        "median_ms": 1.5110049862414598,
+        "samples_ms": [
+          1.5110049862414598
+        ]
+      },
+      "throughput_atoms_per_s": 3309.055923393886
+    },
+    {
+      "name": "ethanol",
+      "n_atoms": 9,
+      "energy_ref_eV": -4217.999106167241,
+      "energy_tt_eV": -4217.999106167241,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 1.670042984187603,
+        "std_ms": 0.0,
+        "median_ms": 1.670042984187603,
+        "samples_ms": [
+          1.670042984187603
+        ]
+      },
+      "throughput_atoms_per_s": 5389.082847096942
+    },
+    {
+      "name": "benzene",
+      "n_atoms": 12,
+      "energy_ref_eV": -6322.7017414348975,
+      "energy_tt_eV": -6322.7017414348975,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 1.8258849740959704,
+        "std_ms": 0.0,
+        "median_ms": 1.8258849740959704,
+        "samples_ms": [
+          1.8258849740959704
+        ]
+      },
+      "throughput_atoms_per_s": 6572.15551376199
+    },
+    {
+      "name": "caffeine",
+      "n_atoms": 24,
+      "energy_ref_eV": -18517.490870345402,
+      "energy_tt_eV": -18517.490870345402,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 2.339218044653535,
+        "std_ms": 0.0,
+        "median_ms": 2.339218044653535,
+        "samples_ms": [
+          2.339218044653535
+        ]
+      },
+      "throughput_atoms_per_s": 10259.838775976386
+    },
+    {
+      "name": "2000054",
+      "n_atoms": 56,
+      "energy_ref_eV": -45414.01161799815,
+      "energy_tt_eV": -45414.01161799815,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 4.567228024825454,
+        "std_ms": 0.0,
+        "median_ms": 4.567228024825454,
+        "samples_ms": [
+          4.567228024825454
+        ]
+      },
+      "throughput_atoms_per_s": 12261.26650467384
+    },
+    {
+      "name": "1100172",
+      "n_atoms": 100,
+      "energy_ref_eV": -86593.36853417165,
+      "energy_tt_eV": -86593.36853417165,
+      "energy_error_eV": 0.0,
+      "energy_abs_error_eV": 0.0,
+      "energy_error_kcal_mol": 0.0,
+      "energy_abs_error_kcal_mol": 0.0,
+      "timing": {
+        "mean_ms": 8.759932010434568,
+        "std_ms": 0.0,
+        "median_ms": 8.759932010434568,
+        "samples_ms": [
+          8.759932010434568
+        ]
+      },
+      "throughput_atoms_per_s": 11415.613714910458
+    }
+  ]
+}

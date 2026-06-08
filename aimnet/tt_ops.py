@@ -1,0 +1,293 @@
+import math
+
+import torch
+from torch import Tensor
+
+from aimnet import nbops
+
+
+def lazy_calc_dij_lr(data: dict[str, Tensor]) -> dict[str, Tensor]:
+    if "d_ij_lr" not in data:
+        nb_mode = nbops.get_nb_mode(data)
+        if nb_mode == 0:
+            data["d_ij_lr"] = data["d_ij"]
+        else:
+            data["d_ij_lr"] = calc_distances(data, suffix="_lr")[0]
+    return data
+
+
+def lazy_calc_dij(data: dict[str, Tensor], suffix: str) -> dict[str, Tensor]:
+    """Lazily calculate distances for a given suffix.
+
+    Computes and caches d_ij{suffix} in data dict if not present.
+    For nb_mode=0 (no neighbor list), reuses d_ij.
+
+    Parameters
+    ----------
+    data : dict
+        Data dictionary.
+    suffix : str
+        Suffix for neighbor matrix (e.g., "_coulomb", "_dftd3", "_lr").
+
+    Returns
+    -------
+    dict
+        Data dictionary with d_ij{suffix} added.
+    """
+    key = f"d_ij{suffix}"
+    if key not in data:
+        nb_mode = nbops.get_nb_mode(data)
+        if nb_mode == 0:
+            data[key] = data["d_ij"]
+        else:
+            data[key] = calc_distances(data, suffix=suffix)[0]
+    return data
+
+
+def calc_distances(data: dict[str, Tensor], suffix: str = "", pad_value: float = 1.0) -> tuple[Tensor, Tensor]:
+    coord_i, coord_j = nbops.get_ij(data["coord"], data, suffix)
+    if f"shifts{suffix}" in data:
+        assert "cell" in data, "cell is required if shifts are provided"
+        nb_mode = nbops.get_nb_mode(data)
+        cell = data["cell"]
+        if nb_mode == 2:
+            # Batched format: shifts (B, N, M, 3), cell (B, 3, 3) or (3, 3)
+            if cell.ndim == 2:
+                shifts = torch.einsum("bnmd,dh->bnmh", data[f"shifts{suffix}"], cell)
+            else:
+                shifts = torch.einsum("bnmd,bdh->bnmh", data[f"shifts{suffix}"], cell)
+        elif nb_mode == 1:
+            # Flat format: shifts (N_total, M, 3), cell (3, 3) or (B, 3, 3)
+            if cell.ndim == 2:
+                shifts = data[f"shifts{suffix}"] @ cell
+            else:
+                # Batched cells - need mol_idx to select correct cell for each atom
+                mol_idx = data["mol_idx"]
+                atom_cell = cell[mol_idx]  # (N_total, 3, 3)
+                # shifts: (N_total, M, 3), atom_cell: (N_total, 3, 3)
+                shifts = torch.einsum("nmd,ndh->nmh", data[f"shifts{suffix}"], atom_cell)
+        else:
+            # nb_mode == 0: no neighbor matrix, shouldn't have shifts
+            shifts = data[f"shifts{suffix}"] @ cell
+        coord_j = coord_j + shifts
+    r_ij = coord_j - coord_i
+    r_ij = nbops.mask_ij_(r_ij, data, mask_value=pad_value, inplace=False, suffix=suffix)
+    d_ij = torch.norm(r_ij, p=2, dim=-1)
+    return d_ij, r_ij
+
+
+def center_coordinates(coord: Tensor, data: dict[str, Tensor], masses: Tensor | None = None) -> Tensor:
+    if masses is not None:
+        masses = masses.unsqueeze(-1)
+        center = nbops.mol_sum(coord * masses, data) / nbops.mol_sum(masses, data)
+    else:
+        center = nbops.mol_sum(coord, data) / data["mol_sizes"]
+    nb_mode = nbops.get_nb_mode(data)
+    if nb_mode in (0, 2):
+        center = center.unsqueeze(-2)
+    coord = coord - center
+    return coord
+
+
+def cosine_cutoff(d_ij: Tensor, rc: float | Tensor) -> Tensor:
+    rc = torch.as_tensor(rc, dtype=d_ij.dtype, device=d_ij.device)
+    fc = 0.5 * (torch.cos(d_ij.clamp(min=torch.full_like(rc, 1e-6), max=rc) * (math.pi / rc)) + 1.0)
+    return fc
+
+
+def exp_cutoff(d: Tensor, rc: Tensor) -> Tensor:
+    fc = torch.exp(-1.0 / (1.0 - (d / rc).clamp(0, 1.0 - 1e-6).pow(2))) / 0.36787944117144233
+    return fc
+
+
+def exp_expand(d_ij: Tensor, shifts: Tensor, eta: float | Tensor) -> Tensor:
+    eta = torch.as_tensor(eta, dtype=d_ij.dtype, device=d_ij.device)
+    # expand on axis -1, e.g. (b, n, m) -> (b, n, m, shifts)
+    return torch.exp(-eta * (d_ij.unsqueeze(-1) - shifts) ** 2)
+
+
+def nse(
+    Q: Tensor,
+    q_u: Tensor,
+    f_u: Tensor,
+    data: dict[str, Tensor],
+    epsilon: float = 1.0e-6,
+) -> Tensor:
+    # Q and q_u and f_u must have last dimension size 1 or 2
+    F_u = nbops.mol_sum(f_u, data)
+    if epsilon > 0:
+        F_u = F_u + epsilon
+    Q_u = nbops.mol_sum(q_u, data)
+    dQ = Q - Q_u
+    # for loss
+    data["_dQ"] = dQ
+
+    nb_mode = nbops.get_nb_mode(data)
+    if nb_mode in (0, 2):
+        F_u = F_u.unsqueeze(-2)
+        dQ = dQ.unsqueeze(-2)
+    elif nb_mode == 1:
+        data["mol_sizes"][-1] += 1
+        F_u = torch.repeat_interleave(F_u, data["mol_sizes"], dim=0)
+        dQ = torch.repeat_interleave(dQ, data["mol_sizes"], dim=0)
+        data["mol_sizes"][-1] -= 1
+    else:
+        raise ValueError(f"Invalid neighbor mode: {nb_mode}")
+    f = f_u / F_u
+    q = q_u + f * dQ
+    return q
+
+
+def coulomb_matrix_dsf(d_ij: Tensor, Rc: float, alpha: float, data: dict[str, Tensor]) -> Tensor:
+    _c1 = (alpha * d_ij).erfc() / d_ij
+    _c2 = math.erfc(alpha * Rc) / Rc
+    _c3 = _c2 / Rc
+    _c4 = 2 * alpha * math.exp(-((alpha * Rc) ** 2)) / (Rc * math.pi**0.5)
+    J = _c1 - _c2 + (d_ij - Rc) * (_c3 + _c4)
+    # Zero invalid pairs: padding/diagonal (mask_ij_lr) OR beyond cutoff
+    mask = data["mask_ij_lr"] | (d_ij > Rc)
+    J.masked_fill_(mask, 0.0)
+    return J
+
+
+def coulomb_matrix_sf(q_j: Tensor, d_ij: Tensor, Rc: float, data: dict[str, Tensor]) -> Tensor:
+    _c1 = 1.0 / d_ij
+    _c2 = 1.0 / Rc
+    _c3 = _c2 / Rc
+    J = _c1 - _c2 + (d_ij - Rc) * _c3
+    # Zero invalid pairs: padding/diagonal (mask_ij_lr) OR beyond cutoff
+    mask = data["mask_ij_lr"] | (d_ij > Rc)
+    J.masked_fill_(mask, 0.0)
+    return J
+
+
+def get_shifts_within_cutoff(cell: Tensor, cutoff: Tensor) -> Tensor:
+    """Get all lattice shift vectors within cutoff distance.
+
+    Note: Batched cells are not supported - this function is only used by Ewald summation
+    which is a single-molecule calculation.
+
+    Deprecated
+    ----------
+    This helper is no longer used inside ``aimnet`` after switching the Ewald
+    backend to ``nvalchemiops``. It is kept for backwards compatibility with
+    external consumers that may still rely on it.
+    """
+    assert cell.ndim == 2 and cell.shape == (3, 3), "Batched cells not supported for Ewald summation"
+    cell_inv = torch.linalg.inv(cell).mT
+    inv_distances = cell_inv.norm(p=2, dim=-1)
+    num_repeats = torch.ceil(cutoff * inv_distances).to(torch.long)
+    device = cell.device
+    shifts = torch.cartesian_prod(
+        torch.arange(-int(num_repeats[0].item()), int(num_repeats[0].item()) + 1, device=device),
+        torch.arange(-int(num_repeats[1].item()), int(num_repeats[1].item()) + 1, device=device),
+        torch.arange(-int(num_repeats[2].item()), int(num_repeats[2].item()) + 1, device=device),
+    ).to(torch.float)
+    return shifts
+
+
+def coulomb_matrix_ewald(coord: Tensor, cell: Tensor, accuracy: float = 1e-8) -> Tensor:
+    """Compute Coulomb matrix using a pure-PyTorch Ewald summation.
+
+    Parameters
+    ----------
+    coord : Tensor
+        Atomic coordinates, shape (N, 3).
+    cell : Tensor
+        Unit cell vectors, shape (3, 3).
+    accuracy : float
+        Target accuracy for the Ewald summation. Controls the real-space
+        and reciprocal-space cutoffs. Lower values give higher accuracy
+        but require more computation. Default is 1e-8.
+
+        The cutoffs are computed as:
+        - eta = (V^2 / N)^(1/6) / sqrt(2*pi)
+        - cutoff_real = sqrt(-2 * ln(accuracy)) * eta
+        - cutoff_recip = sqrt(-2 * ln(accuracy)) / eta
+
+    Returns
+    -------
+    Tensor
+        Coulomb matrix J, shape (N, N).
+
+    Deprecated
+    ----------
+    The calculator now uses ``nvalchemiops.torch.interactions.electrostatics.ewald_summation``
+    via :class:`aimnet.modules.lr.LRCoulomb`. This pure-PyTorch helper is kept
+    for backwards compatibility / regression cross-checks but is no longer used
+    by ``LRCoulomb``.
+    """
+    # single molecule implementation. nb_mode == 1
+    assert coord.ndim == 2 and cell.ndim == 2, "Only single molecule is supported"
+    N = coord.shape[0]
+    volume = torch.det(cell)
+    eta = ((volume**2 / N) ** (1 / 6)) / math.sqrt(2.0 * math.pi)
+    cutoff_real = math.sqrt(-2.0 * math.log(accuracy)) * eta
+    cutoff_recip = math.sqrt(-2.0 * math.log(accuracy)) / eta
+
+    # real space
+    _grad_mode = torch.is_grad_enabled()
+    torch.set_grad_enabled(False)
+    shifts = get_shifts_within_cutoff(cell, cutoff_real)  # (num_shifts, 3)
+    torch.set_grad_enabled(_grad_mode)
+    disps_ij = coord[None, :, :] - coord[:, None, :]
+    disps = disps_ij[None, :, :, :] + torch.matmul(shifts, cell)[:, None, None, :]
+    distances_all = disps.norm(p=2, dim=-1)  # (num_shifts, num_atoms, num_atoms)
+    within_cutoff = (distances_all > 0.1) & (distances_all < cutoff_real)
+    distances = distances_all[within_cutoff]
+    e_real_matrix_aug = torch.zeros_like(distances_all)
+    e_real_matrix_aug[within_cutoff] = torch.erfc(distances / (math.sqrt(2) * eta)) / distances
+    e_real_matrix = e_real_matrix_aug.sum(dim=0)
+
+    # reciprocal space
+    recip = 2 * math.pi * torch.linalg.inv(cell).mT
+    _grad_mode = torch.is_grad_enabled()
+    torch.set_grad_enabled(False)
+    shifts = get_shifts_within_cutoff(recip, cutoff_recip)
+    torch.set_grad_enabled(_grad_mode)
+    ks_all = torch.matmul(shifts, recip)
+    length_all = ks_all.norm(p=2, dim=-1)
+    within_cutoff = (length_all > 0.1) & (length_all < cutoff_recip)
+    ks = ks_all[within_cutoff]
+    length = length_all[within_cutoff]
+    phases = torch.sum(ks[:, None, None, :] * disps_ij[None, :, :, :], dim=-1)
+    e_recip_matrix_aug = (
+        torch.cos(phases)
+        * torch.exp(-0.5 * torch.square(eta * length[:, None, None]))
+        / torch.square(length[:, None, None])
+    )
+    e_recip_matrix = 4.0 * math.pi / volume * torch.sum(e_recip_matrix_aug, dim=0)
+    # self interaction
+    device = coord.device
+    diag = -math.sqrt(2.0 / math.pi) / eta * torch.ones(N, device=device)
+    e_self_matrix = torch.diag(diag)
+
+    J = e_real_matrix + e_recip_matrix + e_self_matrix
+    return J
+
+
+def huber(x: Tensor, delta: float = 1.0) -> Tensor:
+    return torch.where(x.abs() < delta, 0.5 * x**2, delta * (x.abs() - 0.5 * delta))
+
+
+def bumpfn(x: Tensor, low: float = 0.0, high: float = 1.0) -> Tensor:
+    """For x > 0, return smooth transition function which is 0 for x <= low and 1 for x >= high"""
+    x = (x - low) / (high - low)
+    x = x.clamp(min=1e-6, max=1 - 1e-6)
+    a = (-1 / x).exp()
+    b = (-1 / (1 - x)).exp()
+    return a / (a + b)
+
+
+def smoothstep(x: Tensor, low: float = 0.0, high: float = 1.0) -> Tensor:
+    """For x > 0, return smooth transition function which is 0 for x <= low and 1 for x >= high"""
+    x = (x - low) / (high - low)
+    x = x.clamp(min=0, max=1)
+    return x.pow(3) * (x * (x * 6 - 15) + 10)
+
+
+def expstep(x: Tensor, low: float = 0.0, high: float = 1.0) -> Tensor:
+    """For x > 0, return smooth transition function which is 0 for x <= low and 1 for x >= high"""
+    x = (x - low) / (high - low)
+    x = x.clamp(min=1e-6, max=1 - 1e-6)
+    return (-1 / (1 - x.pow(2))).exp() / 0.36787944117144233

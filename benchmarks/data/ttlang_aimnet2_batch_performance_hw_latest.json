@@ -1,0 +1,91 @@
+{
+  "schema": "aimnet.ttlang_batch_performance.v1",
+  "timestamp": "2026-06-08T17:11:39.042488Z",
+  "mode": "hw",
+  "warmup": 1,
+  "repeats": 1,
+  "batch_sizes_requested": [
+    5,
+    10,
+    20,
+    50
+  ],
+  "system_pool": [
+    "H2O",
+    "CH4",
+    "NH3",
+    "caffeine",
+    "2000054",
+    "1100172"
+  ],
+  "batches": [
+    {
+      "batch_size": 5,
+      "status": "ok",
+      "n_molecules": 5,
+      "n_atoms_total": 92,
+      "timing": {
+        "mean_ms": 29.212479013949633,
+        "std_ms": 0.0,
+        "median_ms": 29.212479013949633,
+        "samples_ms": [
+          29.212479013949633
+        ]
+      },
+      "ms_per_molecule": 5.8424958027899265,
+      "molecules_per_s": 171.15972929282668,
+      "atoms_per_s": 3149.339018988011
+    },
+    {
+      "batch_size": 10,
+      "status": "ok",
+      "n_molecules": 10,
+      "n_atoms_total": 228,
+      "timing": {
+        "mean_ms": 66.58807903295383,
+        "std_ms": 0.0,
+        "median_ms": 66.58807903295383,
+        "samples_ms": [
+          66.58807903295383
+        ]
+      },
+      "ms_per_molecule": 6.658807903295383,
+      "molecules_per_s": 150.17703086240243,
+      "atoms_per_s": 3424.0363036627755
+    },
+    {
+      "batch_size": 20,
+      "status": "ok",
+      "n_molecules": 20,
+      "n_atoms_total": 584,
+      "timing": {
+        "mean_ms": 168.59112202655524,
+        "std_ms": 0.0,
+        "median_ms": 168.59112202655524,
+        "samples_ms": [
+          168.59112202655524
+        ]
+      },
+      "ms_per_molecule": 8.429556101327762,
+      "molecules_per_s": 118.63020875351755,
+      "atoms_per_s": 3464.002095602713
+    },
+    {
+      "batch_size": 50,
+      "status": "ok",
+      "n_molecules": 50,
+      "n_atoms_total": 1544,
+      "timing": {
+        "mean_ms": 463.6702879797667,
+        "std_ms": 0.0,
+        "median_ms": 463.6702879797667,
+        "samples_ms": [
+          463.6702879797667
+        ]
+      },
+      "ms_per_molecule": 9.273405759595335,
+      "molecules_per_s": 107.83524693344565,
+      "atoms_per_s": 3329.9524253048016
+    }
+  ]
+}
