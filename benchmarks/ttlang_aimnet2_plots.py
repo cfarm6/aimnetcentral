@@ -180,7 +180,7 @@ def main() -> None:
     if hw is not None:
         timing_data["hw"] = hw
 
-    generated.append(plot_timing(timing_data, "timing", "Mean latency (ms)", "timing_latency.svg"))
+    generated.append(plot_timing(timing_data, "timing", "Time (ms)", "timing_latency.svg"))
 
     modes = list(timing_data.keys())
     systems = sorted(
@@ -195,15 +195,14 @@ def main() -> None:
         vals, stds = [], []
         for n in systems:
             s = by_name[n]
-            mean_tp, std_tp = _rate_stats(s["n_atoms"], s["timing"]["samples_ms"])
-            vals.append(mean_tp)
-            stds.append(std_tp)
+            vals.append(s["timing"]["mean_ms"])
+            stds.append(s["timing"]["std_ms"])
         offset = (i - (len(modes) - 1) / 2) * width
         ax.bar([xi + offset for xi in x], vals, width=width, yerr=stds, capsize=3, label=mode)
     ax.set_xticks(x)
     ax.set_xticklabels(systems, rotation=30, ha="right")
-    ax.set_ylabel("Throughput (atoms/s)")
-    ax.set_title("timing throughput")
+    ax.set_ylabel("Time (ms)")
+    ax.set_title("timing computation time")
     ax.legend()
     fig.tight_layout()
     out = PLOTS_DIR / "timing_throughput.svg"
